@@ -129,6 +129,8 @@ class Pinocchio_Wrapper:
     @property
     def angular_momentum(self): return self.data.hg[3:6]
     @property
+    def inertia_matrix(self): return self.data.Ig.inertia
+    @property
     def R_z(self):
         """Base의 Yaw 회전만 추출한 SO3 행렬"""
         yaw = np.arctan2(self.R_body_to_world[1, 0], self.R_body_to_world[0, 0])

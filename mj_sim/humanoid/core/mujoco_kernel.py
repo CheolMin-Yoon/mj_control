@@ -2,23 +2,28 @@ import numpy as np
 import mujoco
 import pinocchio as pin
 
+
 class Mujoco_Kernel:
+
     def __init__(self, xml_path, joint_names_pin_order=None):
         self.model = mujoco.MjModel.from_xml_path(xml_path)
         self.data  = mujoco.MjData(self.model)
+
+        # 버퍼
         self._force_buf = np.zeros(6)
-        self._foot_keys = []
+        self._q_buf     = np.zeros(self.model.nq)
+        self._dq_buf    = np.zeros(self.model.nv)
+        self._tau       = np.zeros(self.model.nu)
+
+        # 접촉 등록 상태
+        self._foot_keys      = []
         self._geom_id_to_key = {}
-        self.contact_forces = {}
-        self._tau = np.zeros(self.model.nu)
-        nq = self.model.nq
-        nv = self.model.nv
-        self._q_buf  = np.zeros(nq)
-        self._dq_buf = np.zeros(nv)
-        
+        self.contact_forces  = {}
+
         if not joint_names_pin_order or any(n is Ellipsis for n in joint_names_pin_order):
-            raise ValueError("joint_names_pin_order를 명시적으로 전달해야 합니다.")    
-        
+            raise ValueError("joint_names_pin_order를 명시적으로 전달해야 합니다.")
+
+        # Pinocchio 관절 순서 → MuJoCo actuator 인덱스 permutation
         joint_id_to_act_id = {
             self.model.actuator_trnid[i, 0]: i for i in range(self.model.nu)
         }
@@ -38,53 +43,54 @@ class Mujoco_Kernel:
         else:
             self.q_keyframe = None
 
+
+    # 시뮬 reset
     def reset_to_keyframe(self, key_id: int = 0):
-        """MJCF keyframe 자세로 시뮬 초기화."""
         if self.model.nkey > key_id:
             mujoco.mj_resetDataKeyframe(self.model, self.data, key_id)
         else:
             mujoco.mj_resetData(self.model, self.data)
 
 
-    # 상태 읽기
+    # 상태 read
     @property
-    def q_mj(self):
-        return self.data.qpos
+    def q_mj(self):  return self.data.qpos
     @property
-    def dq_mj(self):
-        return self.data.qvel
-
-    # quat 변환 후 state에 setter 경유 write
+    def dq_mj(self): return self.data.qvel
     def update_robot_state(self, state):
-        q_mj  = self.q_mj
-        dq_mj = self.dq_mj
+        # MJ quat (w,x,y,z) → Pin quat (x,y,z,w)
+        # MJ free joint qvel: lin은 world, ang은 body local
+        # Pin FreeFlyer dq: lin/ang 모두 body local
+        q_mj, dq_mj = self.q_mj, self.dq_mj
+
         self._q_buf[0:3] = q_mj[0:3]
         self._q_buf[3]   = q_mj[4]
         self._q_buf[4]   = q_mj[5]
         self._q_buf[5]   = q_mj[6]
         self._q_buf[6]   = q_mj[3]
         self._q_buf[7:]  = q_mj[7:]
-        quat = pin.Quaternion(self._q_buf[3:7])
-        R_T = quat.toRotationMatrix().T
+
+        R_T = pin.Quaternion(self._q_buf[3:7]).toRotationMatrix().T
         self._dq_buf[0:3] = R_T @ dq_mj[0:3]
         self._dq_buf[3:]  = dq_mj[3:]
+
         state.q  = self._q_buf
         state.dq = self._dq_buf
 
-    # 상태 쓰기 — pinocchio 순서(na,)의 tau를 MuJoCo ctrl에 in-place 반영
-    @property
-    def ctrl_tau(self):
-        return self._tau
 
+    # 상태 write
+    @property
+    def ctrl_tau(self): return self._tau
     @ctrl_tau.setter
     def ctrl_tau(self, tau_new):
         np.copyto(self._tau, tau_new)
         self.data.ctrl[self._tau_perm] = self._tau
-
+    # 시뮬 step
     def step(self):
         mujoco.mj_step(self.model, self.data)
-    
-    # 접촉 geom names 등록
+
+
+    # 접촉
     def register_foot_geoms(self, foot_map: dict, by: str = "auto"):
         assert by in ("body", "geom", "auto"), f"by must be body/geom/auto, got {by}"
 
@@ -108,15 +114,15 @@ class Mujoco_Kernel:
             if not registered:
                 raise ValueError(f"register_foot_geoms: '{name}' matched no geom")
 
-        self._foot_keys = list(foot_map.keys())
+        self._foot_keys     = list(foot_map.keys())
         self.contact_forces = {k: np.zeros(3) for k in self._foot_keys}
-    
+
     def get_foot_contact_state(self) -> tuple:
         """
         Returns
         -------
         forces : dict  {key: f_world(3,)}
-        points : list  [np.ndarray(3,), ...]  실제 MuJoCo 접촉점 world 위치
+        points : list  [np.ndarray(3,), ...]  MuJoCo 접촉점 world 위치
         """
         for k in self._foot_keys:
             self.contact_forces[k].fill(0.0)

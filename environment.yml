@@ -1,0 +1,29 @@
+name: mj
+channels:
+  - conda-forge
+  - defaults
+
+dependencies:
+  - python=3.12
+
+  # 시뮬 / 동역학
+  - pinocchio=4.0.0
+  - mujoco
+  - example-robot-data      # pin 4.0 example용 G1 URDF
+  - meshcat-python          # pin 4.0 example 시각화
+
+  # QP / Convex optimization
+  - proxsuite               # ProxQP (proximal QP)
+  - osqp                    # ADMM-for-QP 레퍼런스
+  - cvxpy                   # SOCP/SDP/LASSO 프로토타이핑
+
+  # 수치 / 플롯
+  - numpy
+  - scipy
+  - matplotlib
+
+  # Jupyter
+  - jupyter
+  - ipykernel
+  - nbformat
+  - nbconvert
