@@ -240,6 +240,70 @@ def plot_contact_schedule(times, contact_mask, force, dt,
     plt.pause(0.001)
 
 
+def summarize_tracking_error(times, err, axes=('X', 'Y', 'Z'),
+                             title="Position Error", plot=True,
+                             plot_axes=('X', 'Z'), block=False):
+    """축별 추종 오차 통계 (max/min/RMS) 계산 + 옵션으로 그래프.
+
+    times: shape (N,)
+    err:   shape (N, len(axes))  — 보통 target_pos - actual_pos
+    axes:  통계 라벨 (3D 기본)
+    plot_axes: 그래프에 표시할 축 부분집합 (마커·주석 포함)
+    """
+    times = np.asarray(times)
+    err   = np.asarray(err)
+    assert err.shape[1] == len(axes), f"err.shape[1]={err.shape[1]} ≠ axes={len(axes)}"
+
+    # ── 통계 출력 ──
+    stats = {}
+    for i, lab in enumerate(axes):
+        e = err[:, i]
+        i_max, i_min = int(np.argmax(e)), int(np.argmin(e))
+        stats[lab] = {
+            'max':       float(e[i_max]),
+            'max_t':     float(times[i_max]),
+            'min':       float(e[i_min]),
+            'min_t':     float(times[i_min]),
+            'abs_max':   float(np.abs(e).max()),
+            'rms':       float(np.sqrt((e**2).mean())),
+        }
+        print(f'{lab}: max = {stats[lab]["max"]:+.4f} m @ t={stats[lab]["max_t"]:.3f}s  |  '
+              f'min = {stats[lab]["min"]:+.4f} m @ t={stats[lab]["min_t"]:.3f}s  |  '
+              f'|max| = {stats[lab]["abs_max"]:.4f} m  |  RMS = {stats[lab]["rms"]:.4f} m')
+
+    if not plot:
+        return stats
+
+    # ── 그래프 (선택 축) + max/min 마커 ──
+    color_map = {'X': 'red', 'Y': 'green', 'Z': 'blue'}
+    plt.figure(figsize=(7, 4))
+    for lab in plot_axes:
+        idx = axes.index(lab)
+        e   = err[:, idx]
+        c   = color_map.get(lab, None)
+        plt.plot(times, e, color=c, linewidth=1.2, label=f'{lab} error')
+        i_max = int(np.argmax(e)); i_min = int(np.argmin(e))
+        plt.scatter([times[i_max], times[i_min]], [e[i_max], e[i_min]],
+                    color=c, s=40, zorder=5)
+        plt.annotate(f'max {e[i_max]:+.3f}', (times[i_max], e[i_max]),
+                     textcoords='offset points', xytext=(5, 5),
+                     color=c, fontsize=8)
+        plt.annotate(f'min {e[i_min]:+.3f}', (times[i_min], e[i_min]),
+                     textcoords='offset points', xytext=(5, -10),
+                     color=c, fontsize=8)
+
+    plt.axhline(0, color='k', linestyle='--', linewidth=0.7)
+    plt.xlabel('Time [s]')
+    plt.ylabel('Position Error [m]')
+    plt.title(title)
+    plt.legend(loc='best')
+    plt.grid(True)
+    plt.tight_layout()
+    plt.show(block=block)
+    plt.pause(0.001)
+    return stats
+
+
 def hold_until_all_fig_closed():
     """모든 figure가 닫힐 때까지 대기. non-blocking plot들 마지막에 호출."""
     plt.show()

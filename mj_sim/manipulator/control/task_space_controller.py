@@ -19,9 +19,9 @@ class TaskSpaceController:
     def __init__(self, wrapper: 'Pinocchio_Wrapper'):
         self.wrapper = wrapper
 
-        # 게인 (PD impedance, 자연진동수 기반)
-        wn_pos = 100.0
-        wn_ori = 100.0
+        # 게인 
+        wn_pos = 20.0
+        wn_ori = 20.0
         self.Kp_pos = wn_pos**2 * np.eye(3)
         self.Kp_ori = wn_ori**2 * np.eye(3)
         self.Kd_lin = 2 * wn_pos * np.eye(3)

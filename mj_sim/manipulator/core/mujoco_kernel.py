@@ -13,17 +13,19 @@ class Mujoco_Kernel:
     def __init__(self, xml_path, joint_names_pin_order=None):
         self.model = mujoco.MjModel.from_xml_path(xml_path)
         self.data  = mujoco.MjData(self.model)
-        self._tau = np.zeros(self.model.nu)
         nq = self.model.nq
         nv = self.model.nv
-        self._q_buf  = np.zeros(nq)
+        self._q_buf  = np.zeros(nq)   # full MuJoCo state — state container 호환
         self._dq_buf = np.zeros(nv)
-        
+
         if not joint_names_pin_order or any(n is Ellipsis for n in joint_names_pin_order):
-            raise ValueError("joint_names_pin_order를 명시적으로 전달해야 합니다.")    
-        
+            raise ValueError("joint_names_pin_order를 명시적으로 전달해야 합니다.")
+
+        # joint-driven actuator만 매핑 (tendon-driven 등 비-joint actuator는 별도 namespace, joint_id 덮어쓰기 방지)
         joint_id_to_act_id = {
-            self.model.actuator_trnid[i, 0]: i for i in range(self.model.nu)
+            self.model.actuator_trnid[i, 0]: i
+            for i in range(self.model.nu)
+            if self.model.actuator_trntype[i] == mujoco.mjtTrn.mjTRN_JOINT
         }
         try:
             self._tau_perm = np.array([
@@ -32,6 +34,9 @@ class Mujoco_Kernel:
             ], dtype=int)
         except KeyError as e:
             raise ValueError(f"Pinocchio 관절 {e} 가 MuJoCo Actuator에 연결되어 있지 않습니다!")
+
+        # ctrl 버퍼는 perm 길이 — Pinocchio nv와 일치 (그리퍼 등 비-Pinocchio actuator 제외)
+        self._tau = np.zeros(len(self._tau_perm))
 
         # MJCF keyframe[0] 자세 (없으면 None)
         if self.model.nkey > 0:
@@ -66,21 +71,22 @@ class Mujoco_Kernel:
         state.q  = self._q_buf
         state.dq = self._dq_buf
 
-    # 상태 쓰기 
+    # 상태 쓰기 — Pinocchio 관절 순서로 (그리퍼 등은 별도: kernel.data.ctrl[idx] 직접)
     @property
     def ctrl_pos(self):
         return self.data.ctrl[self._tau_perm]
     @ctrl_pos.setter
     def ctrl_pos(self, q_des):
-        np.copyto(self._q_buf, q_des)
-        self.data.ctrl[self._tau_perm] = self._q_buf
-    
+        """q_des shape = (len(_tau_perm),) — Pinocchio nv 일치"""
+        self.data.ctrl[self._tau_perm] = q_des
+
     @property
     def ctrl_tau(self):
         return self._tau
 
     @ctrl_tau.setter
     def ctrl_tau(self, tau_des):
+        """tau_des shape = (len(_tau_perm),) — Pinocchio nv 일치"""
         np.copyto(self._tau, tau_des)
         self.data.ctrl[self._tau_perm] = self._tau
 

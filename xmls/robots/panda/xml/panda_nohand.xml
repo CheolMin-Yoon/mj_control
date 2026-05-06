@@ -187,6 +187,12 @@
                     <geom mesh="link7_c" class="panda/collision"/>
                     <body name="attachment" pos="0 0 0.107" quat="0.3826834 0 0 0.9238795">
                       <site name="attachment_site"/>
+                      <!-- 그리퍼 손가락 사이 중심 — Pinocchio FK용 가상 frame.
+                           quat=(0,0,0,1): 부모(attachment)와 panda_torque.xml의 hand 사이
+                           180°(z) 회전 차 보정 → MJCF grasp_site와 orientation 일치. -->
+                      <body name="grasp" pos="0 0 0.103" quat="0 0 0 1">
+                        <site name="grasp_site" size="0.005" rgba="1 0 0 0.5"/>
+                      </body>
                     </body>
                   </body>
                 </body>

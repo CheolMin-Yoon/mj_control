@@ -35,24 +35,45 @@ MANIPULATOR_FRAMES = {
 
 
 class Pinocchio_Wrapper:
-    def __init__(self, urdf_path: str, package_dirs):
-        robot = RobotWrapper.BuildFromURDF(
-            str(urdf_path),
-            package_dirs=[str(package_dirs)],
-            root_joint=None, # fixed base
-        )
-
-        self.model  = robot.model
-        self.vmodel = robot.visual_model
-        self.cmodel = robot.collision_model
+    def __init__(self, model_path: str, package_dirs=None, frames: dict = None,
+                 load_geometry: bool = True):
+        """
+        model_path    : .urdf 또는 .xml (MJCF) 경로 — 확장자로 자동 분기
+        package_dirs  : URDF의 mesh package_dirs (load_geometry=True일 때만)
+        frames        : {"ee": "<link_name>", "base": "<link_name>"} 오버라이드.
+                        None이면 MANIPULATOR_FRAMES (UR5e 기본).
+        load_geometry : URDF visual/collision mesh 로드 여부.
+                        False면 kinematic+dynamic tree만 — mesh 경로 깨진 URDF에 사용.
+                        MJCF는 geometry 미지원 (자동 무시).
+        """
+        path = str(model_path)
+        if path.endswith('.urdf'):
+            if load_geometry:
+                robot = RobotWrapper.BuildFromURDF(
+                    path, package_dirs=[str(package_dirs)], root_joint=None,
+                )
+                self.model  = robot.model
+                self.vmodel = robot.visual_model
+                self.cmodel = robot.collision_model
+            else:
+                self.model  = pin.buildModelFromUrdf(path)
+                self.vmodel = None
+                self.cmodel = None
+        elif path.endswith('.xml'):
+            # MJCF — inertial 정보 풍부, geometry는 미지원
+            self.model  = pin.buildModelFromMJCF(path)
+            self.vmodel = None
+            self.cmodel = None
+        else:
+            raise ValueError(f"지원 안 되는 모델 형식: {path} (.urdf 또는 .xml만)")
         self.data   = self.model.createData()
         self.nv    = self.model.nv
         self.na   = self.model.nv
         self.mass  = pin.computeTotalMass(self.model)
-        self.current_state = FixedBaseRobotState()
 
-        # frame id 캐시
-        self.fid = {k: self.model.getFrameId(v) for k, v in MANIPULATOR_FRAMES.items()}
+        # frame id 캐시 — robot마다 link name 다름 (panda: panda_link0/8, ur5e: base_link/tool0)
+        frames = frames if frames is not None else MANIPULATOR_FRAMES
+        self.fid = {k: self.model.getFrameId(v) for k, v in frames.items()}
 
         # 초기 자세
         q_neutral = pin.neutral(self.model)
@@ -68,8 +89,6 @@ class Pinocchio_Wrapper:
     def update_model(self, q, dq):
         self._q  = q
         self._dq = dq
-        self.current_state.q = q
-        self.current_state.dq = dq
         pin.framesForwardKinematics(self.model, self.data, q)
         pin.updateFramePlacements(self.model, self.data)
         pin.computeAllTerms(self.model, self.data, q, dq)
