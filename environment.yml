@@ -16,6 +16,7 @@ dependencies:
   - proxsuite               # ProxQP (proximal QP)
   - osqp                    # ADMM-for-QP 레퍼런스
   - cvxpy                   # SOCP/SDP/LASSO 프로토타이핑
+  - casadi
 
   # 수치 / 플롯
   - numpy
@@ -27,3 +28,6 @@ dependencies:
   - ipykernel
   - nbformat
   - nbconvert
+
+  # 병렬 환경
+  # 무조코 플레이 그라운드, jax[cuda12], trajax

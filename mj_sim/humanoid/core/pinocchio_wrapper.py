@@ -3,10 +3,10 @@ import pinocchio as pin
 from pinocchio.robot_wrapper import RobotWrapper
 
 
-# G1 frame — URDF link
+# G1 frame — URDF link (foot sole = virtual OP_FRAME added in __init__)
 G1_FRAMES = {
-    "L_foot": "left_ankle_roll_link",
-    "R_foot": "right_ankle_roll_link",
+    "L_foot": "L_foot_sole",
+    "R_foot": "R_foot_sole",
     "L_hand": "left_rubber_hand",
     "R_hand": "right_rubber_hand",
     "L_hip" : "left_hip_pitch_link",
@@ -15,6 +15,11 @@ G1_FRAMES = {
     "R_sh"  : "right_shoulder_pitch_link",
     "base"  : "pelvis",
 }
+
+# contact geom centroid in ankle_roll_link local frame
+# 4 sphere geoms: [-0.05,±0.025,-0.03] (rear) and [0.12,±0.03,-0.03] (front) → centroid [0.035, 0, -0.03]
+FOOT_SOLE_OFFSET = np.array([0.035, 0.0, -0.03])
+_ANKLE_LINKS = {"L_foot": "left_ankle_roll_link", "R_foot": "right_ankle_roll_link"}
 
 LEG_KEYS = ("L_foot", "R_foot")
 LEG_IDX  = {k: i for i, k in enumerate(LEG_KEYS)}
@@ -34,7 +39,19 @@ class Pinocchio_Wrapper:
         self.model  = robot.model
         self.vmodel = robot.visual_model
         self.cmodel = robot.collision_model
-        self.data   = self.model.createData()
+
+        # virtual foot sole frames (contact geom centroid offset from ankle_roll_link)
+        for key in ("L_foot", "R_foot"):
+            ankle_fid = self.model.getFrameId(_ANKLE_LINKS[key])
+            ankle_f   = self.model.frames[ankle_fid]
+            self.model.addFrame(pin.Frame(
+                G1_FRAMES[key],
+                ankle_f.parent,
+                ankle_fid,
+                ankle_f.placement * pin.SE3(np.eye(3), FOOT_SOLE_OFFSET),
+                pin.FrameType.OP_FRAME,
+            ))
+        self.data = self.model.createData()
 
         # 기본 정보
         self.nv   = self.model.nv
