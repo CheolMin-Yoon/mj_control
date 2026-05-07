@@ -14,7 +14,7 @@ class TrajOptimizer:
     상태 x (13,) = [Θ(3), p(3), ω(3), v(3), 1]
       Θ : base 오일러각 (roll/pitch/yaw), body-z 기준
       p : CoM 위치 (world)
-      ω : base 각속도 (body)
+      ω : base 각속도 (world)   — go2-convex-mpc 컨벤션, B_c도 world frame moment arm
       v : CoM 선속도 (world)
       1 : 증대 상태 (중력 상수항 흡수)
 

@@ -29,6 +29,7 @@ class SimScheduler:
         with mujoco.viewer.launch_passive(self.model, self.data,
                                           show_left_ui=True,
                                           show_right_ui=True) as viewer:
+            viewer.opt.geomgroup[3] = 0  # hide collision geoms
             view = Visualizer(viewer)
             next_ctrl = next_render = 0.0
             wall_start = time.perf_counter()

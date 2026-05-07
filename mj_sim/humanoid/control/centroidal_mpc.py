@@ -30,7 +30,7 @@ class CentroidalMPC:
       x (13,) = [Θ(3), p(3), ω(3), v(3), 1]
         Θ : base 오일러각 (roll/pitch/yaw)
         p : CoM 위치 (world)
-        ω : base 각속도 (body)
+        ω : base 각속도 (world)   — go2-convex-mpc 컨벤션
         v : CoM 선속도 (world)
         1 : 증대 상태 — 중력항을 A_c[9:12,12]=[0,0,-g]로 흡수, x_0[12]=1 필수
 
@@ -143,14 +143,16 @@ class CentroidalMPC:
         sol = self.solver(**args)
         t2 = time.perf_counter()
 
-        # 4) Stash for warm start next call
-        self.x_prev     = sol['x']
-        self.lam_x_prev = sol['lam_x']
-        self.lam_a_prev = sol['lam_a']
-
         self.update_time = (t1 - t0) * 1e3
         self.solve_time  = (t2 - t1) * 1e3
         self.last_status = self.solver.stats().get('return_status')
+
+        # 4) Stash for warm start next call — solved 계열일 때만.
+        #    실패 (primal infeasible / max iter) 시 sol['x']는 garbage 가능성 → warm start 오염 방지.
+        if self.last_status in ('solved', 'solved inaccurate'):
+            self.x_prev     = sol['x']
+            self.lam_x_prev = sol['lam_x']
+            self.lam_a_prev = sol['lam_a']
 
         # 5) F_seq 추출
         z = np.asarray(sol['x']).flatten()

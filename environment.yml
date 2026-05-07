@@ -9,8 +9,6 @@ dependencies:
   # 시뮬 / 동역학
   - pinocchio=4.0.0
   - mujoco
-  - example-robot-data      # pin 4.0 example용 G1 URDF
-  - meshcat-python          # pin 4.0 example 시각화
 
   # QP / Convex optimization
   - proxsuite               # ProxQP (proximal QP)
@@ -29,5 +27,7 @@ dependencies:
   - nbformat
   - nbconvert
 
-  # 병렬 환경
-  # 무조코 플레이 그라운드, jax[cuda12], trajax
+  # PyPI 전용 
+  - pip
+  - pip:
+      - newton[examples]    

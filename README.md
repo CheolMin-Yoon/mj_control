@@ -33,9 +33,13 @@ conda activate mj
 ### 2. Mobile (`mj_sim/mobile/`)
 
 - **LQR error dynamics**: `husky_LQR_tracking.ipynb`
-- **MPC**:
 
 ---
+
+### 3. CartPole 
+
+- iLQR + socu 
+- quadruped robot wbc dynamics iLQR + socu
 
 ### How to Make New
 새로운 로봇이나 시뮬레이션 환경을 구성할 때의 가이드입니다.

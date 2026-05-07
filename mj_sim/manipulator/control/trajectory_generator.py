@@ -11,6 +11,7 @@ class TrajectoryGenerator:
         self.times = self.compute_time_wp_to_wp(target_speed)
         self.vel, self.acc = self.compute_hueristic()
         self.segments_coeffs = []
+        
         for i in range(self.N - 1):
             T_segment = self.times[i+1] - self.times[i] # 구간 소요 시간
             coeffs = self.compute_segment_coeffs(
@@ -42,7 +43,7 @@ class TrajectoryGenerator:
         vel[-1] = np.zeros(3)
         acc[0] = np.zeros(3)
         acc[-1] = np.zeros(3)
-
+        '''
         for i in range(1, self.N-1):
             dt_prev = self.times[i] - self.times[i-1]
             dt_next = self.times[i+1] - self.times[i]
@@ -50,6 +51,7 @@ class TrajectoryGenerator:
             v_next = (self.wp_list[i+1] - self.wp_list[i]) / dt_next
             v_prev = (self.wp_list[i] - self.wp_list[i-1]) / dt_prev
             acc[i] = (v_next - v_prev) / ((dt_prev + dt_next) / 2)
+        '''
 
         return vel, acc
 

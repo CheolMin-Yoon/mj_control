@@ -252,18 +252,24 @@ class WholeBodyController:
 
 
     def compute(self, com_des: np.ndarray, com_dot_des: np.ndarray,
-                contact_mask=None, dL_des: np.ndarray = None) -> np.ndarray:
+                contact_mask=None, dL_des: np.ndarray = None,
+                ddc_feedforward: np.ndarray = None) -> np.ndarray:
         """
-        com_des      : (3,) desired CoM position [world]
-        com_dot_des  : (3,) desired CoM velocity [world]
-        contact_mask : (n_feet,) int, 1=stance 0=swing (LEG_KEYS 순)
-        returns      : tau (na,)
+        com_des         : (3,) desired CoM position [world]
+        com_dot_des     : (3,) desired CoM velocity [world]
+        contact_mask    : (n_feet,) int, 1=stance 0=swing (LEG_KEYS 순)
+        ddc_feedforward : (3,) 외부 (예: MPC) 가 plan 한 desired CoM acceleration —
+                          PD 출력에 더해진다 (replace 아님).  PD 가 안정성/고대역 피드백을
+                          담당하고, MPC 가 horizon-aware 명령을 feedforward 로 추가.
+        returns         : tau (na,)
         """
         pw = self.pw
 
         # BalanceTask: PD → ddc_des
         ddc_des = (self.kp_com * (com_des     - pw.com_pos_world) +
                    self.kd_com * (com_dot_des - pw.com_vel_world))
+        if ddc_feedforward is not None:
+            ddc_des = ddc_des + ddc_feedforward
 
         # CoMDynamics: K, u
         self.com_dyn.update(pw, ddc_des, dL=dL_des)
