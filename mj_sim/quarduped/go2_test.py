@@ -12,9 +12,9 @@ from core import FloatingBaseRobotState, Pinocchio_Wrapper, Mujoco_Kernel
 from utils import SimScheduler, Visualizer
 
 # %%
-URDF = '/home/frlab/mj_opt/xmls/robots/go2_description/urdf/go2_description.urdf'
-PKG  = '/home/frlab/mj_opt/xmls/robots'
-MJCF = '/home/frlab/mj_opt/xmls/systems/go2/scene.xml'
+URDF = '/home/frlab/mj_opt/models/go2/urdf/go2_description.urdf'
+PKG  = '/home/frlab/mj_opt/models/go2'
+MJCF = '/home/frlab/mj_opt/models/scenes/go2/scene.xml'
 
 # %%
 PHASE_OFFSET = np.array([0.5, 0.0, 0.0, 0.5])   # trot: FL+RR vs FR+RL
