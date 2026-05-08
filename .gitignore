@@ -8,6 +8,7 @@ __pycache__/
 venv/
 env/
 .env
+.claude
 
 # 모델 가중치 및 대용량 데이터 파일
 *.pt
