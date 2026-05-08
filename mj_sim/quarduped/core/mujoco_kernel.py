@@ -61,8 +61,8 @@ class Mujoco_Kernel:
     @property
     def dq_mj(self):
         return self.data.qvel
-    
-    # quat 변환 후 state에 setter 경유 write
+
+    # quat 변환 후 state에 setter 경유 write (pinocchio 호환)
     def update_robot_state(self, state):
         q_mj  = self.q_mj
         dq_mj = self.dq_mj
@@ -78,6 +78,41 @@ class Mujoco_Kernel:
         self._dq_buf[3:]  = dq_mj[3:]
         state.q  = self._q_buf
         state.dq = self._dq_buf
+
+    # adam용: 회전행렬 + (v_world, ω_body) 직접 노출 — quat 순서 변환 불필요
+    def get_adam_state(self):
+        '''
+        Returns
+        -------
+        w_H_b      : (4,4) base SE3 (world)
+        joint_q    : (na,) joint positions
+        base_vel   : (6,) [v_world, ω_body] — mujoco free joint 원본 그대로
+        joint_dq   : (na,) joint velocities
+
+        adam은 base_velocity를 representation에 따라 해석한다:
+        - MIXED: (v_world, ω_world) 기대  → ω_body는 R @ ω_body로 변환 필요
+        - BODY_FIXED: (v_body, ω_body) 기대 → v_world는 R^T @ v_world로 변환 필요
+        wrapper에서 representation에 맞춰 바꿔 쓴다.
+        '''
+        q_mj  = self.q_mj
+        dq_mj = self.dq_mj
+
+        # mujoco quat: (w, x, y, z) → 회전행렬 (변환 한 번에)
+        R = np.zeros(9)
+        mujoco.mju_quat2Mat(R, q_mj[3:7])
+        R = R.reshape(3, 3)
+
+        w_H_b = np.eye(4)
+        w_H_b[:3, :3] = R
+        w_H_b[:3,  3] = q_mj[0:3]
+
+        joint_q  = q_mj[7:].copy()
+        joint_dq = dq_mj[6:].copy()
+
+        # mujoco free joint qvel: (v_world, ω_body) — 그대로 반환
+        base_vel = dq_mj[0:6].copy()
+
+        return w_H_b, joint_q, base_vel, joint_dq, R
 
     # 상태 쓰기 — pinocchio 순서(na,)의 tau를 MuJoCo ctrl에 in-place 반영
     @property
