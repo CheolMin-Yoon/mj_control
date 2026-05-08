@@ -11,9 +11,7 @@ dependencies:
   - mujoco
 
   # QP / Convex optimization
-  - proxsuite               # ProxQP (proximal QP)
-  - osqp                    # ADMM-for-QP 레퍼런스
-  - cvxpy                   # SOCP/SDP/LASSO 프로토타이핑
+  - osqp                   
   - casadi
 
   # 수치 / 플롯
@@ -28,9 +26,11 @@ dependencies:
   - nbconvert
 
   # PyPI 전용
-  - pip
-  - pip:
-      - newton[examples]
-      - --extra-index-url https://download.pytorch.org/whl/cu128
-      - torch
-      - torchvision
+  #- pip
+  #- pip:
+  #    - newton[examples]
+  #    - --extra-index-url https://download.pytorch.org/whl/cu128
+  #    - torch
+  #    - torchvision
+  # 추후 추가 
+  # https://github.com/edxmorgan/casadi-on-gpu
