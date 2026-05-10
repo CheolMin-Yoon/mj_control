@@ -55,11 +55,15 @@ pinocchio
 mujoco-robotics-lab
 python
 
-__pycache__/
-*.pyc
+# =========================
+# Jupyter
+# =========================
 .ipynb_checkpoints/
-.DS_Store
-build/
+
+# =========================
+# Package / Dist
+# =========================
 dist/
 *.egg-info/
+
 newton_test

@@ -19,16 +19,17 @@ class TaskSpaceController:
     def __init__(self, wrapper: 'Pinocchio_Wrapper'):
         self.wrapper = wrapper
 
-        # 게인 
-        wn_pos = 20.0
-        wn_ori = 20.0
+        # 게인
+        wn_pos = 10.0
+        wn_ori = 10.0
         self.Kp_pos = wn_pos**2 * np.eye(3)
         self.Kp_ori = wn_ori**2 * np.eye(3)
         self.Kd_lin = 2 * wn_pos * np.eye(3)
         self.Kd_ang = 2 * wn_ori * np.eye(3)
 
         # DLS 파라미터 (Λ_inv + λ²·I 형태로 특이자세 안전)
-        self.I        = np.eye(6)
+        self.I        = np.eye(6)                      # task-space (6D)
+        self.I_q      = np.eye(self.wrapper.nv)        # joint-space (nv)
         self.damping2 = 1e-3 ** 2     # λ² (제곱 형태로 저장)
 
         # 버퍼 (매 step 재사용)
@@ -66,3 +67,17 @@ class TaskSpaceController:
         JJt    = J @ J.T + self.damping2 * self.I
         dq_des = J.T @ np.linalg.solve(JJt, V_des)
         return dq_des
+    
+    def computed_QP(self, pose_err, twist_des, J):
+        
+        V_pos_des = twist_des[:3] + self.Kp_pos @ pose_err[:3]
+        V_ori_des = twist_des[3:] + self.Kp_ori @ pose_err[3:]
+        V_des     = np.concatenate([V_pos_des, V_ori_des])
+        
+        H = J.T @ J + self.damping2 * self.I_q
+        q = - J.T @ V_des
+        r = 0.5 * V_des.T @ V_des
+         
+        return H, q, r
+
+        

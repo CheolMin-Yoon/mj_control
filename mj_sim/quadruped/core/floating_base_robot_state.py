@@ -13,6 +13,7 @@ Numpy에서 배열의 슬라이스를 변수에 할당하면 이는 원본 데�
 
 
 import numpy as np
+import pinocchio as pin
 
 
 class FloatingBaseRobotState:
@@ -37,16 +38,39 @@ class FloatingBaseRobotState:
         self.FR_leg_vel   = self._dq[9:12]
         self.RL_leg_vel   = self._dq[12:15]
         self.RR_leg_vel   = self._dq[15:18]
-  
+
+        # yaw unwrap state (compute_rpy_world 첫 호출 시 lazy init)
+        self._yaw_unwrap_init = False
+
+
+    # 상태 (전체)
     @property
-    def q(self):
-        return self._q
+    def q(self): return self._q
     @q.setter
-    def q(self, q_update):
-        np.copyto(self._q, q_update)
+    def q(self, q_update): np.copyto(self._q, q_update)
+
     @property
-    def dq(self):
-        return self._dq
+    def dq(self): return self._dq
     @dq.setter
-    def dq(self, dq_update):
-        np.copyto(self._dq, dq_update)
+    def dq(self, dq_update): np.copyto(self._dq, dq_update)
+
+
+    # 자세 (RPY world, yaw 연속화)
+    def compute_rpy_world(self) -> np.ndarray:
+        qx, qy, qz, qw = self.base_quat
+        R = pin.Quaternion(qw, qx, qy, qz).toRotationMatrix()
+        roll, pitch, yaw_meas = np.asarray(pin.rpy.matrixToRpy(R)).reshape(3)
+
+        if not self._yaw_unwrap_init:
+            self._yaw_unwrap_init = True
+            self._yaw_prev_meas   = yaw_meas
+            self._yaw_cont        = yaw_meas
+        else:
+            yaw_delta            = (yaw_meas - self._yaw_prev_meas + np.pi) % (2 * np.pi) - np.pi
+            self._yaw_cont      += yaw_delta
+            self._yaw_prev_meas  = yaw_meas
+
+        return np.array([roll, pitch, self._yaw_cont])
+
+    def reset_yaw_unwrap(self):
+        self._yaw_unwrap_init = False

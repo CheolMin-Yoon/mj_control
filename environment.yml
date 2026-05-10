@@ -8,11 +8,10 @@ dependencies:
 
   # 시뮬 / 동역학
   - pinocchio=4.0.0
-  - mujoco
 
   # QP / Convex optimization
-  - osqp                   
-  - casadi
+  - osqp
+  - casadi=3.7.2
 
   # 수치 / 플롯
   - numpy
@@ -24,13 +23,19 @@ dependencies:
   - ipykernel
   - nbformat
   - nbconvert
+  - nbstripout
 
   # PyPI 전용
-  #- pip
-  #- pip:
-  #    - newton[examples]
-  #    - --extra-index-url https://download.pytorch.org/whl/cu128
-  #    - torch
-  #    - torchvision
-  # 추후 추가 
-  # https://github.com/edxmorgan/casadi-on-gpu
+  - pip
+  - pip:
+      - mujoco==3.8.0
+      - mujoco-mjx[warp]==3.8.0
+
+      # 추가 백엔드
+      #- newton[examples]==1.1.0  # NVIDIA Newton (Warp 기반 differentiable physics)
+
+      # 추후 추가
+      # - --extra-index-url https://download.pytorch.org/whl/cu128
+      # - torch
+      # - torchvision
+      # https://github.com/edxmorgan/casadi-on-gpu

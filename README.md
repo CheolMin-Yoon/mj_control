@@ -6,7 +6,13 @@
 ```bash
 conda env create -f environment.yml
 conda activate mj
+
+
+# 모든 주피터 출력 삭제
+nbstripout mj_sim/**/*.ipynb
 ```
+
+
 
 #### 작성원칙
 명명·주석·파일 구조 컨벤션은 [mj_sim/작성원칙.md](mj_sim/작성원칙.md)를 참고하세요.
@@ -19,22 +25,8 @@ conda activate mj
 
 ### 1. Manipulator ([mj_sim/manipulator/](mj_sim/manipulator/))
 
-#### Refactored Scripts
-기존 스터디 파일들을 `core`, `control`, `utils` 패키지로 모듈화하여 재작성한 버전입니다.
-- [ur5e_dls_remake.ipynb](mj_sim/manipulator/ur5e_dls_remake.ipynb): DLS 제어 기반 Remake 버전
-- [ur5e_impedance_remake.ipynb](mj_sim/manipulator/ur5e_impedance_remake.ipynb): Impedance 제어 기반 Remake 버전
-- [panda_impedance.ipynb](mj_sim/manipulator/panda_impedance.ipynb): Franka Panda Impedance 제어
-
-#### Jupyter Study Files ([jupyter_study_files/](mj_sim/manipulator/jupyter_study_files/))
-초기 학습 및 기능 테스트를 위한 스크립트들입니다.
-- **순수 무조코**: `ur5e_mj_dls.ipynb`
-- **순수 DLS + pinocchio**: `ur5e_mj2pin_pure_dls.ipynb`
-- **PTP 궤적 quintic, cubic**: `ur5e_mj2pin_PTP.ipynb`
-- **waypoints 궤적 cubic**: `ur5e_mj2pin_Spline.ipynb`
-- **cubic + 6D control**: `ur5e_mj2pin_Spline_6D.ipynb`
-- **IK를 QP로 변경**: `ur5e_mj2pin_ik_qp.ipynb`
-- **DLS + RRT***: `ur5e_mj2pin_Spline_6D_RRT.ipynb`
-- **OCS impedance control**: `ur5e_mj2pin_impedance.ipynb`
+UR5e / Franka Panda 기반 매니퓰레이터. DLS, Impedance, PTP/Spline 궤적, IK-QP, RRT*, MPC 등.
+세부 구조와 노트북 목록은 [mj_sim/manipulator/README.md](mj_sim/manipulator/README.md) 참고.
 
 ---
 
@@ -48,7 +40,7 @@ conda activate mj
 ---
 
 ### How to Make New
-새로운 로봇이나 시뮬레이션 환경을 구성할 때의 가이드입니다.
+새로운 로봇이나 시뮬레이션 환경을 구성할 때의 가이드입니다. (manipulator 패키지 기준)
 
 1. `core`, `utils` 패키지를 복사한다.
 2. **State container** (예: `FixedBaseRobotState`)
@@ -61,7 +53,7 @@ conda activate mj
 4. **MuJoCo kernel**
    - keyframe 인덱스 / actuator-joint 매핑 (`joint_names_pin_order`) 확인
    - geom/body 이름 점검
-5. **컨벤션 준수**: 위 작성원칙대로 명명 / 주석 / 파일 구조.
+5. **컨벤션 준수**: [mj_sim/작성원칙.md](mj_sim/작성원칙.md)대로 명명 / 주석 / 파일 구조.
 
 ---
 

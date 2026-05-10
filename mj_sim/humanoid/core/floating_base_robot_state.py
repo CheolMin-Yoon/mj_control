@@ -15,7 +15,7 @@ class FloatingBaseRobotState:
 
         # 위치 (q 분할)
         self.humanoid_base_pos  = self._q[0:3]    # pos 3
-        self.humanoid_base_quad = self._q[3:7]    # quat 4
+        self.humanoid_base_quat = self._q[3:7]    # quat 4
         self.left_leg_angle     = self._q[7:13]   # 6
         self.right_leg_angle    = self._q[13:19]  # 6
         self.waist_angle        = self._q[19:22]  # 3
@@ -49,7 +49,7 @@ class FloatingBaseRobotState:
 
     # 자세 (RPY world, yaw 연속화)
     def compute_rpy_world(self) -> np.ndarray:
-        qx, qy, qz, qw = self.humanoid_base_quad
+        qx, qy, qz, qw = self.humanoid_base_quat
         R = pin.Quaternion(qw, qx, qy, qz).toRotationMatrix()
         roll, pitch, yaw_meas = np.asarray(pin.rpy.matrixToRpy(R)).reshape(3)
 

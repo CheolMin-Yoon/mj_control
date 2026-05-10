@@ -55,40 +55,35 @@ class Mujoco_Kernel:
             mujoco.mj_resetData(self.model, self.data)
 
 
-    # 상태 읽기
+    # 상태 read
     @property
-    def q_mj(self):
-        return self.data.qpos
+    def q_mj(self):  return self.data.qpos
     @property
-    def dq_mj(self):
-        return self.data.qvel
-    
+    def dq_mj(self): return self.data.qvel
     def update_robot_state(self, state):
-        q_mj  = self.q_mj
-        dq_mj = self.dq_mj
-        np.copyto(self._q_buf, q_mj)
-        np.copyto(self._dq_buf, dq_mj)
+        np.copyto(self._q_buf, self.q_mj)
+        np.copyto(self._dq_buf, self.dq_mj)
         state.q  = self._q_buf
         state.dq = self._dq_buf
 
-    # 상태 쓰기 — Pinocchio 관절 순서로 (그리퍼 등은 별도: kernel.data.ctrl[idx] 직접)
+
+    # 상태 write — Pinocchio 관절 순서로 (그리퍼 등은 별도: kernel.data.ctrl[idx] 직접)
     @property
-    def ctrl_pos(self):
-        return self.data.ctrl[self._tau_perm]
+    def ctrl_pos(self):       return self.data.ctrl[self._tau_perm]
     @ctrl_pos.setter
     def ctrl_pos(self, q_des):
         """q_des shape = (len(_tau_perm),) — Pinocchio nv 일치"""
         self.data.ctrl[self._tau_perm] = q_des
 
     @property
-    def ctrl_tau(self):
-        return self._tau
-
+    def ctrl_tau(self):       return self._tau
     @ctrl_tau.setter
     def ctrl_tau(self, tau_des):
         """tau_des shape = (len(_tau_perm),) — Pinocchio nv 일치"""
         np.copyto(self._tau, tau_des)
         self.data.ctrl[self._tau_perm] = self._tau
 
+
+    # 시뮬 step
     def step(self):
         mujoco.mj_step(self.model, self.data)
