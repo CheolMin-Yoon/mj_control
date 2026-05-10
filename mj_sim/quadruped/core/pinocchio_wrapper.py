@@ -3,7 +3,7 @@ Mujoco Kernel로부터 q, dq를 받아 Pinocchio 기반 기구학·동역학을 
 
 명명 컨벤션 (MIT/IIT 합성):
 - 좌표계: _W (world), _B (body), _H (hip/horizontal). 단일 대문자 suffix.
-- 회전: R_WB (B→W), R_BW (W→B), R_yaw (yaw-only, SRBD-MPC용).
+- 회전: R_WB (B→W), R_BW (W→B), R_WH (yaw-only, H=horizontal, SRBD-MPC용).
 - 단일문자: m (mass), M (mass matrix), J (Jacobian), R (rotation), I_body / I_world (inertia).
 - 발 인덱싱: FL/FR/RL/RR. r_feet은 (3, 4) 컬럼 순서 [FL, FR, RL, RR].
 
@@ -52,7 +52,7 @@ class Pinocchio_Wrapper:
 
         # body-frame inertia of base (URDF inertial 그대로) — SRBD-MPC용. 시간 불변.
         # joint 0 = universe, 1 = freeflyer (root)의 base body
-        self.I_body = self.model.inertias[1].inertia.copy()
+        self.I_B = self.model.inertias[1].inertia.copy()
 
         # frame id 캐시
         self.fid = {k: self.model.getFrameId(v) for k, v in GO2_FRAMES.items()}
@@ -70,8 +70,8 @@ class Pinocchio_Wrapper:
         self.q_init  = q_neutral.copy()
         self.dq_init = np.zeros(self.nv)
 
-        # 버퍼 (R_yaw [2,2]=1은 init 후 불변, update_model에서 yaw만 in-place 갱신)
-        self.R_yaw  = np.eye(3)
+        # 버퍼 (R_WH [2,2]=1은 init 후 불변, update_model에서 yaw만 in-place 갱신)
+        self.R_WH  = np.eye(3)
         self._r_feet = np.zeros((3, 4))   # [FL, FR, RL, RR] columns
 
         # 마지막에 호출 (FK + frame + 동역학 모두 갱신)
@@ -100,11 +100,11 @@ class Pinocchio_Wrapper:
         self.R_WB = self.oMb.rotation
         self.R_BW = self.R_WB.T
 
-        # R_yaw — yaw-only 회전 (SRBD-MPC 선형화에 사용)
+        # R_WH — yaw-only 회전 (SRBD-MPC 선형화에 사용)
         yaw = np.arctan2(self.R_WB[1, 0], self.R_WB[0, 0])
         c, s = np.cos(yaw), np.sin(yaw)
-        self.R_yaw[0, 0] =  c; self.R_yaw[0, 1] = -s
-        self.R_yaw[1, 0] =  s; self.R_yaw[1, 1] =  c
+        self.R_WH[0, 0] =  c; self.R_WH[0, 1] = -s
+        self.R_WH[1, 0] =  s; self.R_WH[1, 1] =  c
 
         # r_feet — (3, 4) 4발 위치 world frame, 컬럼 순서 [FL, FR, RL, RR]
         self._r_feet[:, 0] = self.oM_FL.translation
@@ -133,7 +133,7 @@ class Pinocchio_Wrapper:
 
     # 관성 (SRBD-MPC용)
     @property
-    def I_world(self):   return self.data.Ig.inertia
+    def I_W(self):   return self.data.Ig.inertia
 
     # 기구학 (base / com / feet)
     @property
