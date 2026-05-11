@@ -1,16 +1,17 @@
 name: mj
 channels:
   - conda-forge
-  - defaults
 
 dependencies:
   - python=3.12
 
-  # 시뮬 / 동역학
+  # 동역학·기구학
   - pinocchio=4.0.0
 
-  # QP / Convex optimization
+  # QP 솔버 (conda는 OSQP만, proxsuite은 PyPI)
   - osqp
+
+  # symbolic / NLP (humanoid centroidal MPC, manipulator MPC, casADi 테스트)
   - casadi=3.7.2
 
   # 수치 / 플롯
@@ -21,21 +22,9 @@ dependencies:
   # Jupyter
   - jupyter
   - ipykernel
-  - nbformat
-  - nbconvert
-  - nbstripout
 
   # PyPI 전용
   - pip
   - pip:
-      - mujoco==3.8.0
-      - mujoco-mjx[warp]==3.8.0
-
-      # 추가 백엔드
-      #- newton[examples]==1.1.0  # NVIDIA Newton (Warp 기반 differentiable physics)
-
-      # 추후 추가
-      # - --extra-index-url https://download.pytorch.org/whl/cu128
-      # - torch
-      # - torchvision
-      # https://github.com/edxmorgan/casadi-on-gpu
+      - mujoco==3.8.0   # 시뮬레이션 — conda-forge 빌드보다 PyPI가 빨라 PyPI 사용
+      - proxsuite       # dense/sparse QP, INRIA. quadruped MPC 백엔드

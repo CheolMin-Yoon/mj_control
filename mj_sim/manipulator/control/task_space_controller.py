@@ -68,7 +68,7 @@ class TaskSpaceController:
         dq_des = J.T @ np.linalg.solve(JJt, V_des)
         return dq_des
     
-    def computed_QP(self, pose_err, twist_des, J):
+    def compute_QP(self, pose_err, twist_des, J):
         
         V_pos_des = twist_des[:3] + self.Kp_pos @ pose_err[:3]
         V_ori_des = twist_des[3:] + self.Kp_ori @ pose_err[3:]

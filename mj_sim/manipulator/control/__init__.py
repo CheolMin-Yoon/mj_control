@@ -1,3 +1,3 @@
 from .task_space_controller import TaskSpaceController
 from .trajectory_generator import TrajectoryGenerator
-from .solvers import OSQP_Solvers
+from .solvers import OSQP_Solver

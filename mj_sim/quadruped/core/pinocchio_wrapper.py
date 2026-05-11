@@ -73,6 +73,10 @@ class Pinocchio_Wrapper:
         # 버퍼 (R_WH [2,2]=1은 init 후 불변, update_model에서 yaw만 in-place 갱신)
         self.R_WH  = np.eye(3)
         self._r_feet = np.zeros((3, 4))   # [FL, FR, RL, RR] columns
+        
+        self._r_feet_com_W   = np.zeros((3, 4))
+        self._r_skew_packed  = np.zeros((3, 12))
+        self._r_skew_views   = tuple(self._r_skew_packed[:, 3*i:3*i+3] for i in range(4))
 
         # 마지막에 호출 (FK + frame + 동역학 모두 갱신)
         self.update_model(self.q_init, self.dq_init)
@@ -112,12 +116,28 @@ class Pinocchio_Wrapper:
         self._r_feet[:, 2] = self.oM_RL.translation
         self._r_feet[:, 3] = self.oM_RR.translation
 
+        # r_feet_com_W — (3, 4) 발-CoM, world frame
+        np.subtract(self._r_feet, self.p_com_W[:, None], out=self._r_feet_com_W)
+
+        # r_skew_W — (3, 12) 각 다리 skew(r_i)를 hstack한 형태, _r_skew_views로 in-place 채움
+        r = self._r_feet_com_W
+        for i in range(4):
+            s = self._r_skew_views[i]
+            rx, ry, rz = r[0, i], r[1, i], r[2, i]
+            s[0, 1] = -rz; s[0, 2] =  ry
+            s[1, 0] =  rz; s[1, 2] = -rx
+            s[2, 0] = -ry; s[2, 1] =  rx
+
 
     # 상태
     @property
     def q(self):  return self._q
     @property
     def dq(self): return self._dq
+    @property
+    def r_feet_com_W(self):  return self._r_feet_com_W
+    @property
+    def r_skew_W(self):      return self._r_skew_packed   
     
     # 동역학
     @property
@@ -130,12 +150,10 @@ class Pinocchio_Wrapper:
     def nle(self):   return self.data.nle
     @property
     def g(self):     return self.data.g
-
-    # 관성 (SRBD-MPC용)
     @property
     def I_W(self):   return self.data.Ig.inertia
 
-    # 기구학 (base / com / feet)
+    # 기구학
     @property
     def p_base_W(self):  return self.oMb.translation
     @property
@@ -149,7 +167,7 @@ class Pinocchio_Wrapper:
         """(3, 4) 4발 위치 world frame, 컬럼 순서 [FL, FR, RL, RR]."""
         return self._r_feet
 
-    # 중심 운동량
+    # 운동량
     @property
     def hg(self): return self.data.hg
     @property

@@ -3,7 +3,7 @@ import scipy.sparse as sp
 import osqp
 
 
-class OSQP_Solvers:
+class OSQP_Solver:
     """min ½ xᵀ H x + qᵀ x   s.t.  l ≤ A x ≤ u
 
     setup() 한 번 → update() 매 step (factorization 재사용 + warm-start).
