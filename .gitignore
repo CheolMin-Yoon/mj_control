@@ -67,3 +67,4 @@ dist/
 *.egg-info/
 
 newton_test
+go2-convex-mpc
