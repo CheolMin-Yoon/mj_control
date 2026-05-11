@@ -77,14 +77,14 @@ kernel.register_foot_geoms({"FL": "FL", "FR": "FR", "RL": "RL", "RR": "RR"})
 gait     = GaitScheduler(gait_hz=3.0, duty=0.6)
 
 # 속도 커맨드 (body frame)
-VX_CMD       = 0.5   # m/s  전진
+VX_CMD       = -0.2   # m/s  전진
 YAW_RATE_CMD = 0.   # rad/s
-Z_TARGET     = 0.27  # m  서있는 높이
+Z_TARGET     = 0.25  # m  서있는 높이
 
 # MPC weight (go2-convex-mpc reference: COST_MATRIX_Q = diag([1,1,50, 10,20,1, 2,2,1, 1,1,1]))
 # reference state [p, rpy, v, omega] → 우리 state [rpy, p, omega, v, gravity] 매핑
-Q_MPC = np.diag([ 10,  20,   1,   # roll/pitch/yaw  ← reference rpy
-                   1,   1,  50,   # px/py/pz        ← reference p
+Q_MPC = np.diag([  1,   1,   50,   # roll/pitch/yaw  ← reference rpy
+                  10,  20,   1,   # px/py/pz        ← reference p
                    1,   1,   1,   # omega           ← reference omega
                    2,   2,   1,   # vx/vy/vz        ← reference v
                    0])            # gravity trick → 가중치 0

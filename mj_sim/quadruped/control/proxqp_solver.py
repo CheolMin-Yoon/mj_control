@@ -11,7 +11,7 @@ class ProxQP_Solver:
     NOTE: equality는 안 씀 (b=None). inequality C=A로 던짐.
     """
 
-    def __init__(self, n, m, eps=1e-4, polish=False):
+    def __init__(self, n, m, eps=1e-3, polish=True):
         self._n, self._m = n, m
         self._qp = qp_dense.QP(n, 0, m)
         self._qp.settings.eps_abs = eps
