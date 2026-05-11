@@ -5,7 +5,7 @@ if TYPE_CHECKING:
     from core import Pinocchio_Wrapper
 
 
-HEIGHT_SWING = 0.08
+HEIGHT_SWING = 0.1
 
 
 class MotionPlanner:
@@ -15,16 +15,8 @@ class MotionPlanner:
     swing 진입 시 다음 착지점(touchdown)을 받는다.
     """
 
-    def __init__(self, wrapper: 'Pinocchio_Wrapper',
-                 raibert_kp=(0.05, 0.05),
-                 raibert_kv_scale=(1.1, 1.0)):
-        """
-        raibert_kp       : (kp_x, kp_y) — CoM 위치 오차 게인 (현재는 velocity-only 보정이라 reserve)
-        raibert_kv_scale : (kv_x, kv_y) — time_constant에 곱하는 속도 게인
-        """
-        self.wrapper          = wrapper
-        self.raibert_kp       = np.asarray(raibert_kp)
-        self.raibert_kv_scale = np.asarray(raibert_kv_scale)
+    def __init__(self, wrapper: 'Pinocchio_Wrapper'):
+        self.wrapper = wrapper
 
 
     # 4차 Bezier XY + 5차 Bezier Z — boundary v=0, peak Z 튜닝
@@ -73,7 +65,9 @@ class MotionPlanner:
 
     # Raibert heuristic — 다음 swing foot touchdown (world)
     def compute_raibert_heuristic(self, leg: str,
-                                  vx_des: float, vy_des: float, yaw_rate_des: float):
+                                  vx_des: float, vy_des: float, yaw_rate_des: float,
+                                  t_stance: float, t_swing: float,
+                                  pos_des_W=None):
         wrapper = self.wrapper
         base_pos_W = wrapper.p_base_W
         com_pos_W  = wrapper.p_com_W
@@ -84,25 +78,41 @@ class MotionPlanner:
         hip_offset = wrapper.get_hip_offset(leg)
         hip_pos_W  = base_pos_W + R_WH @ hip_offset
 
-        # LIPM/CP time constant
-        h_com         = com_pos_W[2]
-        omega         = np.sqrt(9.81 / h_com)
-        time_constant = 1.0 / omega
+        # gait 기반 prediction horizon (Cheetah/go2-convex-mpc 컨벤션)
+        T          = t_swing + 0.5 * t_stance
+        pred_time  = 0.5 * T
+        kv_x, kv_y = 0.4 * T, 0.2 * T
+        kp_x, kp_y = 0.1, 0.05
 
-        kv_x, kv_y = self.raibert_kv_scale * time_constant
+        # body → world 속도 명령
+        v_des_W = R_WH @ np.array([vx_des, vy_des, 0.0])
 
         # nominal: hip 아래, z는 ground 직전
         pos_nominal = np.array([hip_pos_W[0], hip_pos_W[1], 0.01])
 
-        # CoM 속도 오차 보정
+        # feedforward: mid-flight 까지 hip 진행 거리
+        ff = v_des_W * pred_time
+        ff[2] = 0.0
+
+        # CoM 속도 오차 보정 (capture point)
         vel_correction = np.array([
-            kv_x * (com_vel_W[0] - vx_des),
-            kv_y * (com_vel_W[1] - vy_des),
+            kv_x * (com_vel_W[0] - v_des_W[0]),
+            kv_y * (com_vel_W[1] - v_des_W[1]),
             0.0,
         ])
 
-        # yaw 회전 보정 — 다음 step에서 base가 dθ 추가 회전 가정
-        dtheta   = yaw_rate_des * time_constant
+        # CoM 위치 오차 보정 (reference의 pos_correction_term)
+        if pos_des_W is not None:
+            pos_correction = np.array([
+                kp_x * (com_pos_W[0] - pos_des_W[0]),
+                kp_y * (com_pos_W[1] - pos_des_W[1]),
+                0.0,
+            ])
+        else:
+            pos_correction = np.zeros(3)
+
+        # yaw 회전 보정 — pred_time 동안 base가 dθ 추가 회전 가정
+        dtheta   = yaw_rate_des * pred_time
         c, s     = np.cos(dtheta), np.sin(dtheta)
         r_x, r_y = pos_nominal[:2] - base_pos_W[:2]
         rot_correction = np.array([
@@ -111,4 +121,4 @@ class MotionPlanner:
             0.0,
         ])
 
-        return pos_nominal + vel_correction + rot_correction
+        return pos_nominal + ff + vel_correction + pos_correction + rot_correction

@@ -22,10 +22,10 @@ GO2_FRAMES = {
     "FR": "FR_foot",
     "RL": "RL_foot",
     "RR": "RR_foot",
-    "FL_hip": "FL_hip",
-    "FR_hip": "FR_hip",
-    "RL_hip": "RL_hip",
-    "RR_hip": "RR_hip",
+    "FL_hip": "FL_thigh_joint",
+    "FR_hip": "FR_thigh_joint",
+    "RL_hip": "RL_thigh_joint",
+    "RR_hip": "RR_thigh_joint",
     "base":   "base",
 }
 

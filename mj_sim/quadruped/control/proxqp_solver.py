@@ -31,4 +31,7 @@ class ProxQP_Solver:
         status = self._qp.results.info.status
         if str(status).endswith('PROXQP_SOLVED'):
             return self._qp.results.x
+        info = self._qp.results.info
+        print(f"[ProxQP] solve failed: status={status} "
+              f"| iter={info.iter} | prim_res={info.pri_res:.3e} | dual_res={info.dua_res:.3e}")
         return None

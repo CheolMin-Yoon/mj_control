@@ -46,4 +46,8 @@ class OSQP_Solver:
 
     def solve(self):
         res = self._qp.solve()
-        return res.x if res.info.status == 'solved' else None
+        if res.info.status == 'solved':
+            return res.x
+        print(f"[OSQP] solve failed: status={res.info.status} "
+              f"| iter={res.info.iter} | prim_res={res.info.pri_res:.3e} | dual_res={res.info.dua_res:.3e}")
+        return None
