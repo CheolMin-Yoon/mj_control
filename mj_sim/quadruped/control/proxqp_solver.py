@@ -16,6 +16,9 @@ class ProxQP_Solver:
         self._qp = qp_dense.QP(n, 0, m)
         self._qp.settings.eps_abs = eps
         self._qp.settings.eps_rel = eps
+        # iter=1에서 false-positive PRIMAL_INFEASIBLE 종료 방지
+        self._qp.settings.eps_primal_inf = 1e-10
+        self._qp.settings.eps_dual_inf   = 1e-10
         self._qp.settings.verbose = False
         self._setup_done = False
 

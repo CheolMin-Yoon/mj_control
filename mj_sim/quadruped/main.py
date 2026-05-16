@@ -1,6 +1,10 @@
 # %%
 import sys
-sys.path.insert(0, '/home/frlab/mj_opt/mj_sim/quadruped')
+from pathlib import Path
+
+_HERE = Path(__file__).resolve().parent
+_ROOT = _HERE.parents[1]
+sys.path.insert(0, str(_HERE))
 
 import numpy as np
 import mujoco
@@ -12,9 +16,9 @@ from control import (GaitScheduler, LegController, MotionPlanner,
                      SingleRigidBodyDynamics, OSQP_Solver, ProxQP_Solver)
 from utils   import SimScheduler, Visualizer
 
-URDF = '/home/frlab/mj_opt/go2-convex-mpc/models/URDF/go2_description/urdf/go2_description.urdf'
-PKG  = '/home/frlab/mj_opt/go2-convex-mpc/models/URDF'
-MJCF = '/home/frlab/mj_opt/go2-convex-mpc/models/MJCF/go2/scene.xml'
+URDF = str(_ROOT / 'models' / 'go2' / 'urdf' / 'go2_description.urdf')
+PKG  = str(_ROOT / 'models' / 'go2')
+MJCF = str(_ROOT / 'models' / 'scenes' / 'go2' / 'scene.xml')
 
 # %%
 def compute_reference_trajectory(x_current, pos_des_W, v_body_cmd, yaw_rate_cmd, z_target,

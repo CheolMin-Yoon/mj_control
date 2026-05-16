@@ -37,34 +37,35 @@
   <worldbody>
     <body name="base" pos="0.00000000 0.00000000 0.81085112" quat="1 0 0 0" childclass="robot">
       <freejoint name="floating_base" />
+      <inertial pos="0.009896 0.004771 0.100522" mass="8.52" fullinertia="0.172699 0.105949 0.091906 0.001419 0.004023 -0.001672"/>
       <geom name="base_collision" pos="0.023 0. 0.08" quat="1.0 0.0 0.0 0.0" type="box" size="0.075 0.15 0.175" class="collision" />
       <geom name="base_visual" pos="-0.00565 0 -0.05735" quat="1.0 0.0 0.0 0.0" material="default_material" type="mesh" mesh="torso.stl_0_001_0_001_0_001" class="visual" />
       <body name="left_hip_yaw" pos="-0.00565 0.082 -0.05735" quat="0.9961946948320953 0.0 -0.08715578000562225 0.0">
         <joint name="06_left_hip_yaw" type="hinge" ref="0.0" class="motor" range="-1 1" axis="0 0 -1" />
         <site name="06_left_hip_yaw_site" pos="0 0 0" quat="1 0 0 0" />
-        <inertial pos="-0.064842  -0.000036  -0.063090" quat="1.0 0.0 0.0 0.0" mass=" 0.84563" diaginertia="0.0015373 0.0014252 0.0012028" />
+        <inertial pos="-0.064842  -0.000036  -0.063090" mass="0.84563" fullinertia="0.0015373 0.0014252 0.0012028 1.1e-06 0.0005578 2.4e-06"/>
         <geom name="left_hip_yaw_visual" pos="0 0 0" quat="1.0 0.0 0.0 0.0" material="default_material" type="mesh" mesh="left_hip_yaw.stl_0_001_0_001_0_001" class="visual" />
         <body name="left_hip_abad" pos="-0.06435 0 -.07499" quat="0.9762960409925676 0.0 0.21643946114846713 0.0">
           <joint name="07_left_hip_abad" type="hinge" ref="0.0" class="motor" range="-1.2 1.2" axis="1 0 0" />
           <site name="07_left_hip_abad_site" pos="0 0 0" quat="1 0 0 0" />
-          <inertial pos=" 0.067232  -0.013018 0.0001831" quat="1.0 0.0 0.0 0.0" mass="1.208683" diaginertia="0.0017535 0.003338 0.0019927" />
+          <inertial pos="0.067232  -0.013018 0.0001831" mass="1.208683" fullinertia="0.0017535 0.003338 0.0019927 6.3e-06 -8e-05 -1.3e-05"/>
           <geom name="left_hip_abad_visual" pos="0 0 0" quat="1.0 0.0 0.0 0.0" material="default_material" type="mesh" mesh="left_hip_abad.stl_0_001_0_001_0_001" class="visual" />
           <body name="left_upper_leg" pos="0.071 -0.0018375 0.0" quat="0.991444886682765 0.0 -0.13052599997931216 0.0">
             <joint name="08_left_hip_pitch" type="hinge" ref="0.0" class="motor" range="-1.5 1.5" axis="0 1 0" />
             <site name="08_left_hip_pitch_site" pos="0 0 0" quat="1 0 0 0" />
-            <inertial pos=" 0.0132054  0.0269864 -0.096021" quat="1.0 0.0 0.0 0.0" mass="2.64093" diaginertia="0.0243761 0.0259015 0.0038929" />
+            <inertial pos="0.0132054  0.0269864 -0.096021" mass="2.64093" fullinertia="0.0243761 0.0259015 0.0038929 9.96e-05 0.0006548 0.0026713"/>
             <geom name="left_upper_leg_collision" pos="0.0 0.0 -0.16" quat="1.0 0.0 0.0 0.0" type="cylinder" size="0.035 0.09" class="collision" />
             <geom name="left_upper_leg_visual" pos="0.01283 0 -0.0174" quat="1.0 0.0 0.0 0.0" material="default_material" type="mesh" mesh="left_leg_upper.stl_0_001_0_001_0_001" class="visual" />
             <body name="left_lower_leg" pos="0.0 0.0 -0.2666" quat="1.0 0.0 0.0 0.0">
               <joint name="09_left_knee" type="hinge" ref="0.0" class="motor" range="0. 2.2" axis="0 1 0" />
               <site name="09_left_knee_site" pos="0 0 0" quat="1 0 0 0" />
-              <inertial pos="0.00528 0.0014762  -0.13201" quat="1.0 0.0 0.0 0.0" mass="0.3543355" diaginertia="0.003051 0.003033 0.0002529" />
+              <inertial pos="0.00528 0.0014762  -0.13201" mass="0.3543355" fullinertia="0.003051 0.003033 0.0002529 0 8.73e-05 3.93e-05"/>
               <geom name="left_lower_leg_collision" pos="0.0 0.0 -0.15" quat="1.0 0.0 0.0 0.0" type="cylinder" size="0.035 0.08" class="collision" />
               <geom name="left_lower_leg_visual" pos="0 0 0" quat="1.0 0.0 0.0 0.0" material="default_material" type="mesh" mesh="left_leg_lower.stl_0_001_0_001_0_001" class="visual" />
               <body name="left_foot" pos="0.0 0.0 -0.2785" quat="1.0 0.0 0.0 0.0">
                 <joint name="10_left_ankle" type="hinge" ref="0.0" class="motor" range="-0.8 0.8" axis="0 1 0" />
                 <site name="10_left_ankle_site" pos="0 0 0" quat="1 0 0 0" />
-                <inertial pos="0.022623 0.0 -0.012826 " quat="1.0 0.0 0.0 0.0" mass=" 0.280951" diaginertia="8.42e-05 0.0007959 0.0007681" />
+                <inertial pos="0.022623 0.0 -0.012826" mass="0.280951" fullinertia="8.42e-05 0.0007959 0.0007681 0 -4.88e-05 0"/>
                 <geom name="left_foot_collision" pos="0.03 0.0 -0.03" quat="0.7071090180427968 0.0 0.7071045443232221 0.0" type="cylinder" size="0.01 0.075" class="collision" />
                 <geom name="left_foot_visual" pos="0 0 0" quat="1.0 0.0 0.0 0.0" material="default_material" type="mesh" mesh="left_foot.stl_0_001_0_001_0_001" class="visual" />
               </body>
@@ -75,29 +76,29 @@
       <body name="right_hip_yaw" pos="-0.00565 -0.082 -0.05735" quat="0.9961946948320953 0.0 -0.08715578000562225 0.0">
         <joint name="01_right_hip_yaw" type="hinge" ref="0.0" class="motor" range="-1 1" axis="0 0 1" />
         <site name="01_right_hip_yaw_site" pos="0 0 0" quat="1 0 0 0" />
-        <inertial pos="-0.064842  0.000036  -0.063090" quat="1.0 0.0 0.0 0.0" mass=" 0.84563" diaginertia="0.0015373 0.0014252 0.0012028" />
+        <inertial pos="-0.064842  0.000036  -0.063090" mass="0.84563" fullinertia="0.0015373 0.0014252 0.0012028 -1.1e-06 -0.0005578 2.4e-06"/>
         <geom name="right_hip_yaw_visual" pos="0 0 0" quat="1.0 0.0 0.0 0.0" material="default_material" type="mesh" mesh="left_hip_yaw.stl_0_001_-0_001_0_001" class="visual" />
         <body name="right_hip_abad" pos="-0.06435 0 -.07499" quat="0.9762960409925676 0.0 0.21643946114846713 0.0">
           <joint name="02_right_hip_abad" type="hinge" ref="0.0" class="motor" range="-1.2 1.2" axis="-1 0 0" />
           <site name="02_right_hip_abad_site" pos="0 0 0" quat="1 0 0 0" />
-          <inertial pos=" 0.067232  0.013018 0.0001831" quat="1.0 0.0 0.0 0.0" mass="1.208683" diaginertia="0.0017535 0.003338 0.0019927" />
+          <inertial pos="0.067232  0.013018 0.0001831" mass="1.208683" fullinertia="0.0017535 0.003338 0.0019927 -6.3e-06 8e-05 -1.3e-05"/>
           <geom name="right_hip_abad_visual" pos="0 0 0" quat="1.0 0.0 0.0 0.0" material="default_material" type="mesh" mesh="left_hip_abad.stl_0_001_-0_001_0_001" class="visual" />
           <body name="right_upper_leg" pos="0.071 0.0018375 0.0" quat="0.991444886682765 0.0 -0.13052599997931216 0.0">
             <joint name="03_right_hip_pitch" type="hinge" ref="0.0" class="motor" range="-1.5 1.5" axis="0 1 0" />
             <site name="03_right_hip_pitch_site" pos="0 0 0" quat="1 0 0 0" />
-            <inertial pos=" 0.0132054  -0.0269864 -0.096021" quat="1.0 0.0 0.0 0.0" mass="2.64093" diaginertia="0.0243761 0.0259015 0.0038929" />
+            <inertial pos="0.0132054  -0.0269864 -0.096021" mass="2.64093" fullinertia="0.0243761 0.0259015 0.0038929 -9.96e-05 -0.0006548 0.0026713"/>
             <geom name="right_upper_leg_collision" pos="0.0 0.0 -0.16" quat="1.0 0.0 0.0 0.0" type="cylinder" size="0.035 0.09" class="collision" />
             <geom name="right_upper_leg_visual" pos="0.01283 0 -0.0174" quat="1.0 0.0 0.0 0.0" material="default_material" type="mesh" mesh="left_leg_upper.stl_0_001_-0_001_0_001" class="visual" />
             <body name="right_lower_leg" pos="0.0 0.0 -0.2666" quat="1.0 0.0 0.0 0.0">
               <joint name="04_right_knee" type="hinge" ref="0.0" class="motor" range="0. 2.2" axis="0 1 0" />
               <site name="04_right_knee_site" pos="0 0 0" quat="1 0 0 0" />
-              <inertial pos="0.00528 -0.0014762  -0.13201" quat="1.0 0.0 0.0 0.0" mass="0.3543355" diaginertia="0.003051 0.003033 0.0002529" />
+              <inertial pos="0.00528 -0.0014762  -0.13201" mass="0.3543355" fullinertia="0.003051 0.003033 0.0002529 -0 -8.73e-05 3.93e-05"/>
               <geom name="right_lower_leg_collision" pos="0.0 0.0 -0.15" quat="1.0 0.0 0.0 0.0" type="cylinder" size="0.035 0.08" class="collision" />
               <geom name="right_lower_leg_visual" pos="0 0 0" quat="1.0 0.0 0.0 0.0" material="default_material" type="mesh" mesh="left_leg_lower.stl_0_001_-0_001_0_001" class="visual" />
               <body name="right_foot" pos="0.0 0.0 -0.2785" quat="1.0 0.0 0.0 0.0">
                 <joint name="05_right_ankle" type="hinge" ref="0.0" class="motor" range="-0.8 0.8" axis="0 1 0" />
                 <site name="05_right_ankle_site" pos="0 0 0" quat="1 0 0 0" />
-                <inertial pos="0.022623 0.0 -0.012826 " quat="1.0 0.0 0.0 0.0" mass=" 0.280951" diaginertia="8.42e-05 0.0007959 0.0007681" />
+                <inertial pos="0.022623 0.0 -0.012826" mass="0.280951" fullinertia="8.42e-05 0.0007959 0.0007681 -0 4.88e-05 0"/>
                 <geom name="right_foot_collision" pos="0.03 0.0 -0.03" quat="0.7071090180427968 0.0 0.7071045443232221 0.0" type="cylinder" size="0.01 0.075" class="collision" />
                 <geom name="right_foot_visual" pos="0 0 0" quat="1.0 0.0 0.0 0.0" material="default_material" type="mesh" mesh="left_foot.stl_0_001_-0_001_0_001" class="visual" />
               </body>
@@ -106,21 +107,21 @@
         </body>
       </body>
       <body name="left_shoulder" pos="0.01346 0.17608 0.24657" quat="0.9658738845941909 0.0 0.259012816398972 0.0">
-        <inertial pos="0.009265 0.052623 -0.0001249" quat="1.0 0.0 0.0 0.0" mass="0.788506" diaginertia="0.0013678 0.0007392 0.000884" />
+        <inertial pos="0.009265 0.052623 -0.0001249" mass="0.788506" fullinertia="0.0013678 0.0007392 0.000884 2.66e-05 2.1e-06 -1.2e-06"/>
         <geom name="left_shoulder_visual" pos="0 0 0" quat="1.0 0.0 0.0 0.0" material="default_material" type="mesh" mesh="left_shoulder1.stl_0_001_0_001_0_001" class="visual" />
         <body name="left_shoulder_2" pos="0 .0575 0" quat="1.0 0.0 0.0 0.0">
-          <inertial pos="0.0006041 0.0001221 -0.082361" quat="1.0 0.0 0.0 0.0" mass="0.80125" diaginertia="0.0011524 0.0017477 0.0008191" />
+          <inertial pos="0.0006041 0.0001221 -0.082361" mass="0.80125" fullinertia="0.0011524 0.0017477 0.0008191 1e-06 -8e-06 -2.25e-05"/>
           <geom name="left_shoulder_2_visual" pos="0 0 0" quat="1.0 0.0 0.0 0.0" material="default_material" type="mesh" mesh="left_shoulder2.stl_0_001_0_001_0_001" class="visual" />
           <body name="left_upper_arm" pos="0 0 -.10250" quat="1.0 0.0 0.0 0.0">
-            <inertial pos="0.0001703 -0.016797  -0.060" quat="1.0 0.0 0.0 0.0" mass="0.905588" diaginertia="0.0012713 0.0017477 0.0008191" />
+            <inertial pos="0.0001703 -0.016797  -0.060" mass="0.905588" fullinertia="0.0012713 0.0017477 0.0008191 1e-06 -8e-06 -2.25e-05"/>
             <geom name="left_upper_arm_collision" pos="0 -0.01 -0.035" quat="1.0 0.0 0.0 0.0" type="cylinder" size="0.05 0.075" class="collision" />
             <geom name="left_upper_arm_visual" pos="0 0 0" quat="1.0 0.0 0.0 0.0" material="left_upper_arm" type="mesh" mesh="left_shoulder3.stl_0_001_0_001_0_001" class="visual" />
             <body name="left_lower_arm" pos="0 0 -.1455" quat="0.7073882691671998 0.0 -0.706825181105366 0.0">
-              <inertial pos="-0.0059578 0.000111 -0.0426735" quat="1.0 0.0 0.0 0.0" mass="0.34839" diaginertia="0.00157 0.0016167 6.19e-05" />
+              <inertial pos="-0.0059578 0.000111 -0.0426735" mass="0.34839" fullinertia="0.00157 0.0016167 6.19e-05 2e-07 3.35e-05 3e-06"/>
               <geom name="left_lower_arm_collision" pos="-0.01 0 -0.15" quat="1.0 0.0 0.0 0.0" type="cylinder" size="0.025 0.075" class="collision" />
               <geom name="left_lower_arm_visual" pos="0 0 0" quat="1.0 0.0 0.0 0.0" material="left_upper_arm" type="mesh" mesh="left_forearm.stl_0_001_0_001_0_001" class="visual" />
               <body name="left_hand" pos="0 0 -0.27" quat="1.0 0.0 0.0 0.0">
-                <inertial pos="0.0 -0.0 -0.27" quat="1.0 0.0 0.0 0.0" mass="0.01" diaginertia="0.0 0.0 0.0" />
+                <inertial pos="0.0 -0.0 -0.27" mass="0.01" fullinertia="1e-9 1e-9 1e-9 0 0 0"/>
                 <geom name="left_hand_collision" pos="0.0 0.0 0." quat="0.7071090180427968 0.7071045443232221 0.0 0.0" type="cylinder" size="0.025 0.0075" class="collision" />
               </body>
             </body>
@@ -128,21 +129,21 @@
         </body>
       </body>
       <body name="right_shoulder" pos="0.01346 -0.17608 0.24657" quat="0.9658738845941909 0.0 0.259012816398972 0.0">
-        <inertial pos="0.009265 -0.052623 -0.0001249" quat="1.0 0.0 0.0 0.0" mass="0.788506" diaginertia="0.0013678 0.0007392 0.000884" />
+        <inertial pos="0.009265 -0.052623 -0.0001249" mass="0.788506" fullinertia="0.0013678 0.0007392 0.000884 -2.66e-05 -2.1e-06 -1.2e-06"/>
         <geom name="right_shoulder_visual" pos="0 0 0" quat="1.0 0.0 0.0 0.0" material="default_material" type="mesh" mesh="left_shoulder1.stl_0_001_-0_001_0_001" class="visual" />
         <body name="right_shoulder_2" pos="0 -.0575 0" quat="1.0 0.0 0.0 0.0">
-          <inertial pos="0.0006041 -0.0001221 -0.082361" quat="1.0 0.0 0.0 0.0" mass="0.80125" diaginertia="0.0011524 0.0017477 0.0008191" />
+          <inertial pos="0.0006041 -0.0001221 -0.082361" mass="0.80125" fullinertia="0.0011524 0.0017477 0.0008191 -1e-06 8e-06 -2.25e-05"/>
           <geom name="right_shoulder_2_visual" pos="0 0 0" quat="1.0 0.0 0.0 0.0" material="default_material" type="mesh" mesh="left_shoulder2.stl_0_001_-0_001_0_001" class="visual" />
           <body name="right_upper_arm" pos="0 0 -.10250" quat="1.0 0.0 0.0 0.0">
-            <inertial pos="0.0001703 0.016797  -0.060" quat="1.0 0.0 0.0 0.0" mass="0.905588" diaginertia="0.0012713 0.0017477 0.0008191" />
+            <inertial pos="0.0001703 0.016797  -0.060" mass="0.905588" fullinertia="0.0012713 0.0017477 0.0008191 -1e-06 8e-06 -2.25e-05"/>
             <geom name="right_upper_arm_collision" pos="0 -0.01 -0.035" quat="1.0 0.0 0.0 0.0" type="cylinder" size="0.05 0.075" class="collision" />
             <geom name="right_upper_arm_visual" pos="0 0 0" quat="1.0 0.0 0.0 0.0" material="left_upper_arm" type="mesh" mesh="left_shoulder3.stl_0_001_-0_001_0_001" class="visual" />
             <body name="right_lower_arm" pos="0 0 -.1455" quat="0.7073882691671998 0.0 -0.706825181105366 0.0">
-              <inertial pos="-0.0059578 -0.000111 -0.0426735" quat="1.0 0.0 0.0 0.0" mass="0.34839" diaginertia="0.00157 0.0016167 6.19e-05" />
+              <inertial pos="-0.0059578 -0.000111 -0.0426735" mass="0.34839" fullinertia="0.00157 0.0016167 6.19e-05 -2e-07 -3.35e-05 3e-06"/>
               <geom name="right_lower_arm_collision" pos="-0.01 0 -0.15" quat="1.0 0.0 0.0 0.0" type="cylinder" size="0.025 0.075" class="collision" />
               <geom name="right_lower_arm_visual" pos="0 0 0" quat="1.0 0.0 0.0 0.0" material="left_upper_arm" type="mesh" mesh="left_forearm.stl_0_001_0_001_0_001" class="visual" />
               <body name="right_hand" pos="0 0 -0.27" quat="1.0 0.0 0.0 0.0">
-                <inertial pos="0.0 -0.0 -0.27" quat="1.0 0.0 0.0 0.0" mass="0.01" diaginertia="0.0 0.0 0.0" />
+                <inertial pos="0.0 -0.0 -0.27" mass="0.01" fullinertia="1e-9 1e-9 1e-9 0 0 0"/>
                 <geom name="right_hand_collision" pos="0.0 0.0 0." quat="0.7071090180427968 0.7071045443232221 0.0 0.0" type="cylinder" size="0.025 0.0075" class="collision" />
               </body>
             </body>
