@@ -46,7 +46,8 @@ def hat6(V):
     \tag{2}
     $$
     """
-    raise NotImplementedError
+    v, w = V[:3], V[3:]
+    return np.block([[skew(w), v[:, None]], [np.zeros((1, 3)), np.zeros((1, 1))]])
 
 
 def vee6(M):
@@ -58,10 +59,10 @@ def vee6(M):
     \end{aligned}
     $$
     """
-    raise NotImplementedError
+    return np.concatenate([M[:3, 3], unskew(M[:3, :3])])
 
 
-def adjoint(T):
+def Ad(T):  # noqa: N802
     r"""
     $$
     \begin{aligned}
@@ -71,7 +72,8 @@ def adjoint(T):
     \tag{5}
     $$
     """
-    raise NotImplementedError
+    R, r = T[:3, :3], T[:3, 3]
+    return np.block([[R, skew(r) @ R], [np.zeros((3, 3)), R]])
 
 
 def ad(V):
@@ -81,7 +83,8 @@ def ad(V):
     \tag{3}
     $$
     """
-    raise NotImplementedError
+    v, w = V[:3], V[3:]
+    return np.block([[skew(w), skew(v)], [np.zeros((3, 3)), skew(w)]])
 
 
 def _half_angle_coefs(xi):
@@ -107,7 +110,7 @@ def exp3(xi):
     \tag{8}
     $$
     """
-    raise NotImplementedError
+    return np.eye(3) + alpha
 
 
 def log3(R):
@@ -159,7 +162,7 @@ def _sym_prod(a, b):
     raise NotImplementedError
 
 
-def C(xi, eta):  # noqa: N802
+def dexp6_block(xi, eta):
     r"""
     $$
     \begin{aligned}
@@ -175,7 +178,7 @@ def C(xi, eta):  # noqa: N802
     raise NotImplementedError
 
 
-def D(xi, eta):  # noqa: N802
+def dexp6_inv_block(xi, eta):
     r"""
     $$
     \begin{aligned}
@@ -285,7 +288,7 @@ def _deltas(xi, xi_dot, y, y_dot):
     raise NotImplementedError
 
 
-def C_dot(xi, xi_dot, y, y_dot):  # noqa: N802
+def dexp6_block_dot(xi, xi_dot, y, y_dot):
     r"""
     $$
     \begin{aligned}
@@ -304,7 +307,7 @@ def C_dot(xi, xi_dot, y, y_dot):  # noqa: N802
     raise NotImplementedError
 
 
-def D_dot(xi, xi_dot, y, y_dot):  # noqa: N802
+def dexp6_inv_block_dot(xi, xi_dot, y, y_dot):
     r"""
     $$
     \begin{aligned}
