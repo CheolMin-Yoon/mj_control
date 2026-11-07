@@ -31,6 +31,11 @@ class PinocchioWrapper:
         self._dq = dq
 
     @property
+    def mass_matrix(self):
+        """M(q) (nv, nv), computeAllTerms는 상삼각만 채움 → 대칭화"""
+        return np.triu(self.data.M) + np.triu(self.data.M, 1).T
+
+    @property
     def mass_matrix_inv(self):
         return self._mass_matrix_inv
 
@@ -46,6 +51,15 @@ class PinocchioWrapper:
     def jacobian_w(self, key):
         """frame 원점 world 축 Jacobian (6, nv), [linear; angular]"""
         return pin.getFrameJacobian(self.model, self.data, self.frame_ids[key], pin.ReferenceFrame.LOCAL_WORLD_ALIGNED)
+
+    def jacobian_b(self, key):
+        """frame 자신 축 body Jacobian J_b (6, nv), V_b = J_b dq, [linear; angular]"""
+        return pin.getFrameJacobian(self.model, self.data, self.frame_ids[key], pin.ReferenceFrame.LOCAL)
+
+    def jdot_velocity_b(self, key):
+        """d/dt(J_b)·dq (6,), V̇_b = J_b ddq + d/dt(J_b)·dq"""
+        jdot = pin.getFrameJacobianTimeVariation(self.model, self.data, self.frame_ids[key], pin.ReferenceFrame.LOCAL)
+        return jdot @ self._dq
 
     def frame_state_w(self, key):
         """(자세 pin.SE3, 선속도 (3,), 각속도 (3,)) 반환, 속도는 frame 원점 world 축"""
