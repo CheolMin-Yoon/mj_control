@@ -1,0 +1,77 @@
+<mujoco model="indy7">
+  <compiler angle="radian" />
+  <asset>
+    <mesh name="Indy7_0" content_type="model/stl" file="meshes/visual/Indy7_0.stl" />
+    <mesh name="Indy7_01" content_type="model/stl" file="meshes/collision/Indy7_0.stl" />
+    <mesh name="Indy7_1" content_type="model/stl" file="meshes/visual/Indy7_1.stl" />
+    <mesh name="Indy7_11" content_type="model/stl" file="meshes/collision/Indy7_1.stl" />
+    <mesh name="Indy7_2" content_type="model/stl" file="meshes/visual/Indy7_2.stl" />
+    <mesh name="Indy7_21" content_type="model/stl" file="meshes/collision/Indy7_2.stl" />
+    <mesh name="Indy7_3" content_type="model/stl" file="meshes/visual/Indy7_3.stl" />
+    <mesh name="Indy7_31" content_type="model/stl" file="meshes/collision/Indy7_3.stl" />
+    <mesh name="Indy7_4" content_type="model/stl" file="meshes/visual/Indy7_4.stl" />
+    <mesh name="Indy7_41" content_type="model/stl" file="meshes/collision/Indy7_4.stl" />
+    <mesh name="Indy7_5" content_type="model/stl" file="meshes/visual/Indy7_5.stl" />
+    <mesh name="Indy7_51" content_type="model/stl" file="meshes/collision/Indy7_5.stl" />
+    <mesh name="Indy7_6" content_type="model/stl" file="meshes/visual/Indy7_6.stl" />
+    <mesh name="Indy7_61" content_type="model/stl" file="meshes/collision/Indy7_6.stl" />
+  </asset>
+  <worldbody>
+    <body name="link0">
+      <inertial pos="-0.000312 -1.4e-05 0.039961" quat="5.77528e-05 0.71012 0.000176406 0.70408" mass="1.67031" diaginertia="0.00710556 0.00458197 0.00454858" />
+      <geom pos="5.29091e-17 -4.31987e-20 -2.498e-16" quat="1 0 0 0" type="mesh" contype="0" conaffinity="0" group="1" rgba="0.894118 0.894118 0.894118 1" density="0" mesh="Indy7_0" />
+      <geom pos="9.88792e-17 1.00289e-18 -3.19189e-16" quat="1 0 0 0" type="mesh" rgba="0.894118 0.894118 0.894118 1" mesh="Indy7_01" />
+      <body name="link1" pos="0 0 0.0775">
+        <inertial pos="1e-06 -0.038646 0.150736" quat="0.692047 0.1451 -0.145101 0.692071" mass="11.4444" diaginertia="0.121286 0.116323 0.0438038" />
+        <joint name="joint0" range="-3.05433 3.05433" actuatorfrcrange="-431.97 431.97" damping="0.1" frictionloss="10" />
+        <geom pos="-1.96649e-18 7.97973e-17 -7.21645e-16" quat="1 0 0 0" type="mesh" contype="0" conaffinity="0" group="1" rgba="0.894118 0.894118 0.894118 1" density="0" mesh="Indy7_1" />
+        <geom type="mesh" rgba="0.894118 0.894118 0.894118 1" mesh="Indy7_11" />
+        <body name="link2" pos="0 -0.109 0.222" quat="0.5 0.5 0.5 -0.5">
+          <inertial pos="-0.24825 -2e-06 0.076528" quat="0.513397 0.486231 0.485967 0.513652" mass="5.84767" diaginertia="0.17272 0.170892 0.0184784" />
+          <joint name="joint1" range="-3.05433 3.05433" actuatorfrcrange="-431.97 431.97" damping="0.1" frictionloss="10" />
+          <geom pos="1.30451e-15 9.95264e-21 -4.30211e-16" quat="1 0 0 0" type="mesh" contype="0" conaffinity="0" group="1" rgba="0.894118 0.894118 0.894118 1" density="0" mesh="Indy7_2" />
+          <geom pos="1.19349e-15 -3.04932e-19 -4.02456e-16" quat="1 0 0 0" type="mesh" rgba="0.894118 0.894118 0.894118 1" mesh="Indy7_21" />
+          <body name="link3" pos="-0.45 0 -0.0305">
+            <inertial pos="-0.129304 -1.39883e-10 -0.072209" quat="0.5179 0.481432 0.481416 0.517921" mass="2.68206" diaginertia="0.0323203 0.0322584 0.00468321" />
+            <joint name="joint2" range="-3.05433 3.05433" actuatorfrcrange="-197.23 197.23" damping="0.1" frictionloss="10" />
+            <geom pos="5.41234e-16 5.02926e-22 4.44089e-16" quat="1 0 0 0" type="mesh" contype="0" conaffinity="0" group="1" rgba="0.894118 0.894118 0.894118 1" density="0" mesh="Indy7_3" />
+            <geom pos="5.82867e-16 -1.25361e-19 4.02456e-16" quat="1 0 0 0" type="mesh" rgba="0.894118 0.894118 0.894118 1" mesh="Indy7_31" />
+            <body name="link4" pos="-0.267 0 -0.075" quat="0.5 -0.5 -0.5 0.5">
+              <inertial pos="-2e-06 -0.035728 0.051948" quat="0.872565 0.488497 -0.000327672 0.000604302" mass="2.12987" diaginertia="0.008317 0.00820586 0.00291619" />
+              <joint name="joint3" range="-3.05433 3.05433" actuatorfrcrange="-79.79 79.79" damping="0.1" frictionloss="10" />
+              <geom pos="-1.48231e-21 1.59595e-16 -3.46945e-16" quat="1 0 0 0" type="mesh" contype="0" conaffinity="0" group="1" rgba="0.894118 0.894118 0.894118 1" density="0" mesh="Indy7_4" />
+              <geom quat="1 0 0 0" type="mesh" rgba="0.894118 0.894118 0.894118 1" mesh="Indy7_41" />
+              <body name="link5" pos="0 -0.114 0.083" quat="0.5 0.5 0.5 -0.5">
+                <inertial pos="-0.045433 3e-06 0.062349" quat="0.445471 0.548498 0.552569 0.44201" mass="2.22412" diaginertia="0.010418 0.0103408 0.00392383" />
+                <joint name="joint4" range="-3.05433 3.05433" actuatorfrcrange="-79.79 79.79" damping="0.1" frictionloss="10" />
+                <geom pos="2.77556e-16 -1.48231e-21 -3.46945e-16" quat="1 0 0 0" type="mesh" contype="0" conaffinity="0" group="1" rgba="0.894118 0.894118 0.894118 1" density="0" mesh="Indy7_5" />
+                <geom pos="3.81639e-16 -2.71051e-19 -3.81639e-16" quat="1 0 0 0" type="mesh" rgba="0.894118 0.894118 0.894118 1" mesh="Indy7_51" />
+                <body name="link6" pos="-0.168 0 0.069" quat="0.5 -0.5 -0.5 0.5">
+                  <inertial pos="-1.50853e-10 -0.000421 0.031452" quat="0.488605 0.511142 -0.488314 0.511419" mass="0.382549" diaginertia="0.000392017 0.000301774 0.00030047" />
+                  <joint name="joint5" range="-3.75246 3.75246" actuatorfrcrange="-79.79 79.79" damping="0.1" frictionloss="10" />
+                  <geom quat="1 0 0 0" type="mesh" contype="0" conaffinity="0" group="1" rgba="0.894118 0.894118 0.894118 1" density="0" mesh="Indy7_6" />
+                  <geom quat="1 0 0 0" type="mesh" rgba="0.894118 0.894118 0.894118 1" mesh="Indy7_61" />
+                  <body name="tcp" pos="0 0 0.06">
+                    <site name="tcp" size="0.01" rgba="0 0.6 0 1" />
+                  </body>
+                </body>
+              </body>
+            </body>
+          </body>
+        </body>
+      </body>
+    </body>
+  </worldbody>
+  <option timestep="0.002" integrator="implicitfast" />
+  <actuator>
+    <motor name="joint0" joint="joint0" gear="1" ctrllimited="true" ctrlrange="-431.97 431.97" />
+    <motor name="joint1" joint="joint1" gear="1" ctrllimited="true" ctrlrange="-431.97 431.97" />
+    <motor name="joint2" joint="joint2" gear="1" ctrllimited="true" ctrlrange="-197.23 197.23" />
+    <motor name="joint3" joint="joint3" gear="1" ctrllimited="true" ctrlrange="-79.79 79.79" />
+    <motor name="joint4" joint="joint4" gear="1" ctrllimited="true" ctrlrange="-79.79 79.79" />
+    <motor name="joint5" joint="joint5" gear="1" ctrllimited="true" ctrlrange="-79.79 79.79" />
+  </actuator>
+  <keyframe>
+    <key name="home" qpos="0 0.4 -1.2 0.3 -0.8 0.2" ctrl="0 0 0 0 0 0" />
+  </keyframe>
+</mujoco>

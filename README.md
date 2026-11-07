@@ -1,75 +1,54 @@
-#### Mujoco, Pinocchio 시뮬레이션 프레임워크 (`mj_sim`)
+# mj_control
 
-이 레포지토리는 MuJoCo와 Pinocchio를 활용한 로봇 제어 프레임워크입니다. `mj_sim` 폴더 내에 로봇/주제별로 모듈화되어 있습니다.
+MuJoCo 시뮬레이션과 Pinocchio 모델 함수로 고정 기반 로봇 제어기를 구현한다. 카트폴(LQR·MPC 기초), 매니퓰레이터(UR5e·Panda의 DLS·OSC
+임피던스·IK QP), RB-Y1 양팔 SE(3) 임피던스를 다룬다.
 
-#### 환경 활성화 및 설치
+## 설치
+
 ```bash
-conda env create -f environment.yml
-conda activate mj
-
-
-# 모든 주피터 출력 삭제
-nbstripout mj_sim/**/*.ipynb
+uv venv ~/.venvs/mj_control --python 3.14
+source ~/.venvs/mj_control/bin/activate
+uv sync --active
 ```
 
+## 배치
 
+```
+mj_control/
+├── source/
+│   ├── sim/                  # MujocoKernel, SimScheduler, Visualizer, DataLogger, plot
+│   ├── dynamics/             # PinocchioWrapper, MujocoWrapper, CartpoleDynamics, 이산화
+│   ├── control/              # TaskSpaceController, TrajectoryGenerator, EETracking, lqr_gain
+│   ├── solvers/              # OSQPSolver
+│   └── robots/<robot>/       # constants.py, xmls/(MJCF·URDF·mesh, scene*.xml)
+├── scripts/                  # viewer 실행 진입점
+├── tests/                    # headless 검증
+└── docs/                     # 작성원칙, 데모 문서
+```
 
-#### 작성원칙
-명명·주석·파일 구조 컨벤션은 [mj_sim/작성원칙.md](mj_sim/작성원칙.md)를 참고하세요.
+## 실행
 
-#### 공통 유틸
-- [mj_sim/spawn_mujoco.ipynb](mj_sim/spawn_mujoco.ipynb): MuJoCo 모델 스폰 및 viewer 띄우기 템플릿
-- [mj_sim/casADi_test.ipynb](mj_sim/casADi_test.ipynb): CasADi 기반 NLP / QP / MPC 빌딩 블록 테스트
+저장소 루트에서 `~/.venvs/mj_control/bin/python scripts/<script>.py`. viewer 창을 닫으면 결과 플롯이 뜬다.
 
----
+| Script | 내용 |
+| --- | --- |
+| `cartpole_lqr.py` | 카트폴 upright 선형화 + 연속시간 LQR |
+| `panda_impedance.py` | Panda OSC 임피던스, `--dynamics mujoco`면 MuJoCo API 동역학만 |
+| `ur5e_impedance.py` | UR5e OSC 임피던스, 위치·자세 waypoint |
+| `ur5e_dls.py` | UR5e DLS 속도 IK, bias feedforward off → on 두 번 실행 |
+| `ur5e_qp.py` | UR5e DLS IK를 OSQP QP로, 관절 속도·위치 제약 |
 
-### 1. Manipulator ([mj_sim/manipulator/](mj_sim/manipulator/))
+장면만 보려면 `python -m mujoco.viewer --mjcf=source/robots/<robot>/xmls/<scene>.xml`.
 
-UR5e / Franka Panda 기반 매니퓰레이터. DLS, Impedance, PTP/Spline 궤적, IK-QP, RRT*, MPC 등.
-세부 구조와 노트북 목록은 [mj_sim/manipulator/README.md](mj_sim/manipulator/README.md) 참고.
+## 문서
 
----
+- [작성원칙](docs/작성원칙.md): 배치·명명·주석·lint 계약
+- [manipulator](docs/manipulator/README.md), [cartpole](docs/cartpole/README.md), [rby1](docs/rby1/README.md)
+- [Indy7 일반형·v2 자산](docs/indy7/README.md): 공식 출처, torque MJCF·URDF, frame·관절 순서
 
-### 2. CartPole ([mj_sim/cartpole/](mj_sim/cartpole/))
+## 참고
 
-상태 4차원·입력 1차원의 표준 벤치마크. 최적제어 이론을 손으로 디버깅하며 체화하는 단계.
-
-- [LQR_구현.md](mj_sim/cartpole/LQR_구현.md): 평형점 선형화 기반 LQR, finite-horizon / TVLQR, DARE까지 단계별 구현 노트
-- [MPC_구현.md](mj_sim/cartpole/MPC_구현.md): Linear/Nonlinear MPC, condensed vs sparse, horizon·terminal cost 영향 검증 노트
-
----
-
-### How to Make New
-새로운 로봇이나 시뮬레이션 환경을 구성할 때의 가이드입니다. (manipulator 패키지 기준)
-
-1. `core`, `utils` 패키지를 복사한다.
-2. **State container** (예: `FixedBaseRobotState`)
-   - fixed base / floating base에 따라 컨테이너 선택
-   - `NQ`, `NV` 매직넘버를 새 로봇 DOF에 맞게 수정
-   - partition view 슬라이스 인덱스 재계산
-3. **Pinocchio wrapper**
-   - 모듈 상단의 `FRAMES` dict — 새 URDF의 link 이름으로 교체
-   - `__init__`의 placement 캐싱 로직 재검토
-4. **MuJoCo kernel**
-   - keyframe 인덱스 / actuator-joint 매핑 (`joint_names_pin_order`) 확인
-   - geom/body 이름 점검
-5. **컨벤션 준수**: [mj_sim/작성원칙.md](mj_sim/작성원칙.md)대로 명명 / 주석 / 파일 구조.
-
----
-
-### 참고 자료들
 - https://github.com/joonhyung-lee/mujoco-robotics-usage
 - https://github.com/stack-of-tasks/pinocchio
 - https://github.com/ozkannceylan/mujoco-robotics-lab
 - https://github.com/Shunichi09/PythonLinearNonlinearControl
-
----
-
-### To Do Lists
-1. Introduction to Humanoid Robotics — Kajita ✅
-2. Modern Robotics — Kevin M. Lynch, Frank C. Park ✅
-3. Convex Optimization — Stephen Boyd — ~ing
-4. Underactuated Robotics — Russ Tedrake
-5. Convex Model Predictive Control — MIT
-
----
