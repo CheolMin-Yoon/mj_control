@@ -33,6 +33,7 @@ mj_control/
 | Script | 내용 |
 | --- | --- |
 | `cartpole_lqr.py` | 카트폴 upright 선형화 + 연속시간 LQR |
+| `indy7.py` | Indy7 v3 보기, home 자세에서 중력·Coriolis 보상으로 유지, TCP 축 표시 |
 | `panda_impedance.py` | Panda OSC 임피던스, `--dynamics mujoco`면 MuJoCo API 동역학만 |
 | `ur5e_impedance.py` | UR5e OSC 임피던스, 위치·자세 waypoint |
 | `ur5e_dls.py` | UR5e DLS 속도 IK, bias feedforward off → on 두 번 실행 |
@@ -44,7 +45,7 @@ mj_control/
 
 - [작성원칙](docs/작성원칙.md): 배치·명명·주석·lint 계약
 - [manipulator](docs/manipulator/README.md), [cartpole](docs/cartpole/README.md), [rby1](docs/rby1/README.md)
-- [Indy7 일반형·v2 자산](docs/indy7/README.md): 공식 출처, torque MJCF·URDF, frame·관절 순서
+- [Indy7 일반형·v3 자산](docs/indy7/README.md): 공식 출처, torque MJCF·URDF, frame·관절 순서
 
 ## 참고
 
