@@ -106,11 +106,26 @@ def dexp3(xi):
 def dexp3_inv(xi):
     r"""
     $$
-    \mathrm{dexp}_{\xi}^{-1}=\texttt{Jlog3}\big(\exp(\xi)\big)^{\top}
+    \begin{aligned}
+    \mathrm{dexp}_{\xi}^{-1}&=I_3-\frac{1}{2}\lceil\xi\rceil+\Gamma_4\lceil\xi\rceil^2 \\
+    \Gamma_4&=\frac{1-\gamma}{\lVert\xi\rVert^2},\qquad \gamma=\frac{\lVert\xi\rVert}{2}\cot\frac{\lVert\xi\rVert}{2}
+    \approx\frac{1}{12}+\frac{\lVert\xi\rVert^2}{720}+\frac{\lVert\xi\rVert^4}{30240}
+    \end{aligned}
     \tag{27}
     $$
+
+    $$
+    \lVert\xi\rVert<10^{-2}:\ \text{Taylor}
+    $$
     """
-    return pin.Jlog3(pin.exp3(xi)).T
+    theta2 = float(xi @ xi)
+    if theta2 < 1e-4:
+        gamma4 = 1.0 / 12.0 + theta2 / 720.0 + theta2**2 / 30240.0
+    else:
+        half = 0.5 * np.sqrt(theta2)
+        gamma4 = (1.0 - half / np.tan(half)) / theta2
+    hat_xi = pin.skew(xi)
+    return np.eye(3) - 0.5 * hat_xi + gamma4 * hat_xi @ hat_xi
 
 
 def dexp3_dot(xi, xi_dot):
@@ -158,22 +173,26 @@ def log6(T):
 def dexp6(lam):
     r"""
     $$
-    \mathrm{dexp}_{\lambda}=\mathrm{Ad}_{\exp(\lambda)}\,\texttt{Jexp6}(\lambda)
+    \mathrm{dexp}_{\lambda}=\begin{bmatrix}\mathrm{dexp}_{\xi}&C_{\xi}(\eta)\\ 0_3&\mathrm{dexp}_{\xi}\end{bmatrix}
     \tag{28}
     $$
     """
-    return pin.exp6(lam).action @ pin.Jexp6(lam)
+    eta, xi = lam[:3], lam[3:]
+    diag = dexp3(xi)
+    return np.block([[diag, dexp6_block(xi, eta)], [np.zeros((3, 3)), diag]])
 
 
 def dexp6_inv(lam):
     r"""
     $$
-    \mathrm{dexp}_{\lambda}^{-1}=\texttt{Jlog6}\big(\exp(\lambda)\big)\,\mathrm{Ad}_{\exp(\lambda)}^{-1}
+    \mathrm{dexp}_{\lambda}^{-1}=\begin{bmatrix}\mathrm{dexp}_{\xi}^{-1}&
+    -\mathrm{dexp}_{\xi}^{-1}C_{\xi}(\eta)\,\mathrm{dexp}_{\xi}^{-1}\\ 0_3&\mathrm{dexp}_{\xi}^{-1}\end{bmatrix}
     \tag{29}
     $$
     """
-    T = pin.exp6(lam)
-    return pin.Jlog6(T) @ T.inverse().action
+    eta, xi = lam[:3], lam[3:]
+    diag_inv = dexp3_inv(xi)
+    return np.block([[diag_inv, -diag_inv @ dexp6_block(xi, eta) @ diag_inv], [np.zeros((3, 3)), diag_inv]])
 
 
 def dexp6_dot(lam, lam_dot):
