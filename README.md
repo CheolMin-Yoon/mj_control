@@ -2,6 +2,8 @@
 
 이 레포지토리는 MuJoCo와 Pinocchio를 활용한 로봇 제어 프레임워크입니다. `mj_sim` 폴더 내에 로봇/주제별로 모듈화되어 있습니다.
 
+Go2 제어 코드와 자산은 [go2-mjlab의 `legacy/mpc-mujoco`](https://github.com/CheolMin-Yoon/go2-mjlab/tree/legacy/mpc-mujoco)를 참조하세요.
+
 #### 환경 활성화 및 설치
 ```bash
 conda env create -f environment.yml
